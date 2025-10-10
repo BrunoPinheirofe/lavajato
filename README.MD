@@ -22,5 +22,3 @@ Como executar:
 1. Certifique-se de ter Python 3 instalado.
 2. Execute `python3 main.py` ou `python main.py` na raiz do projeto.
 
-O projeto é leve e destinado a estudos e pequenos usos locais. Contribuições
-são bem-vindas — abra uma issue ou um pull request com melhorias.
