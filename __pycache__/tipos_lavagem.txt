@@ -1,0 +1,2 @@
+1|Americana|Lavagem Interna e Externa do Veiculo|50|120
+1|Simples|Lavagem superficial|30|60
