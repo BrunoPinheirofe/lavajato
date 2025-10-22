@@ -3,10 +3,8 @@
 import json
 from database import carregar_dados, salvar_dados
 from datetime import datetime # Importa o módulo datetime
+from buscar_dados import buscar_cliente_por_id
 
-# A partir da fase 2, você deve ter adicionado uma função como ler_id_valido ao utils.py.
-# Para manter a compatibilidade total com o seu código original, 
-# vamos reintroduzir a busca por next, mas você pode substituir por ler_id_valido se tiver implementado.
 
 def cadastrar_agendamento():
     """Cadastra um novo agendamento de forma facilitada"""

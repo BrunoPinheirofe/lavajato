@@ -1,5 +1,7 @@
 # editar.py
 from database import carregar_dados, salvar_dados
+from validadores import ler_float_valido, ler_id_valido
+
 
 def editar_registro():
     """Função universal para editar qualquer tipo de registro"""
@@ -32,7 +34,7 @@ def editar_registro():
         print("Opção inválida!")
 
 def _editar_entidade(dados, nome_entidade, nome_exibicao, campos):
-    """Função auxiliar para editar uma entidade específica"""
+    """Função auxiliar para editar uma entidade específica - Refatorada para usar validadores"""
     
     print(f"\n--- EDITAR {nome_exibicao.upper()} ---")
     
@@ -41,54 +43,49 @@ def _editar_entidade(dados, nome_entidade, nome_exibicao, campos):
         print(f"Nenhum {nome_exibicao.lower()} cadastrado.")
         return
     
+    # Chamada da função de listagem
     _listar_registros(dados, nome_entidade, nome_exibicao)
     
-    try:
-        id_registro = int(input(f"\nID do {nome_exibicao.lower()} a editar: "))
+    # NOVO: Usar ler_id_valido.
+    id_registro = ler_id_valido(f"\nID do {nome_exibicao.lower()} a editar: ")
+    
+    # Encontrar registro
+    registro_encontrado = next((r for r in dados[nome_entidade] if r['id'] == id_registro), None)
+    
+    if not registro_encontrado:
+        print(f"{nome_exibicao} não encontrado!")
+        return
+    
+    print(f"\nEditando {nome_exibicao.lower()}:")
+    print("Deixe em branco para manter o valor atual.")
+    
+    # Editar campos
+    for campo in campos:
+        valor_atual = registro_encontrado.get(campo, '')
         
-        # Encontrar registro
-        registro_encontrado = None
-        for registro in dados[nome_entidade]:
-            if registro['id'] == id_registro:
-                registro_encontrado = registro
-                break
+        # Formatação do valor atual para exibição
+        if campo == 'preco' and isinstance(valor_atual, (int, float)):
+            valor_atual = f"R$ {valor_atual:.2f}"
         
-        if not registro_encontrado:
-            print(f"{nome_exibicao} não encontrado!")
-            return
-        
-        print(f"\nEditando {nome_exibicao.lower()}:")
-        print("Deixe em branco para manter o valor atual.")
-        
-        # Editar campos
-        for campo in campos:
-            valor_atual = registro_encontrado.get(campo, '')
+        if campo == 'preco':
+            # NOVO: Usa a função validada para garantir que o input seja um float.
+            novo_preco = ler_float_valido(f"{campo.title()} atual ({valor_atual}): ")
             
-            if campo == 'preco' and isinstance(valor_atual, (int, float)):
-                valor_atual = f"R$ {valor_atual:.2f}"
-            
+            if novo_preco is not None:
+                registro_encontrado[campo] = novo_preco
+        else:
+            # Tratamento geral para campos string
             novo_valor = input(f"{campo.title()} atual ({valor_atual}): ").strip()
             
             if novo_valor:
-                # Converter tipos específicos
-                if campo == 'preco':
-                    try:
-                        # Remove 'R$' e espaços, converte para float
-                        novo_valor = novo_valor.replace('R$', '').replace(',', '.').strip()
-                        registro_encontrado[campo] = float(novo_valor)
-                    except ValueError:
-                        print("Preço inválido! Mantendo valor anterior.")
-                else:
-                    registro_encontrado[campo] = novo_valor
-        
-        salvar_dados(dados)
-        print(f"{nome_exibicao} atualizado com sucesso!")
-        
-    except ValueError:
-        print("ID inválido!")
+                registro_encontrado[campo] = novo_valor
+    
+    salvar_dados(dados)
+    print(f"{nome_exibicao} atualizado com sucesso!")
+
 
 def _listar_registros(dados, nome_entidade, nome_exibicao):
-    """Lista registros de forma genérica"""
+    """Lista registros de forma genérica (REINCLUÍDA)"""
     
     print(f"\n{nome_exibicao.upper()}S CADASTRADOS:")
     
@@ -103,7 +100,7 @@ def _listar_registros(dados, nome_entidade, nome_exibicao):
                 if cliente['id'] == registro['id_cliente']:
                     nome_cliente = cliente['nome']
                     break
-            print(f"ID: {registro['id']} | Modelo: {registro['modelo']} | Placa: {registro['placa']} | Cor: {registro['cor']} | Cliente: {nome_cliente}")
+            print(f"ID: {registro['id']} | Modelo: {registro['modelo']} | Placa: {registro['placa']} | Cor: {registro.get('cor', 'N/A')} | Cliente: {nome_cliente}")
         
         elif nome_entidade == 'tipos_lavagem':
             print(f"ID: {registro['id']} | Descrição: {registro['descricao']} | Preço: R$ {registro['preco']:.2f} | Tempo: {registro['tempo_medio']}")

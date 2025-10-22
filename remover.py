@@ -1,6 +1,6 @@
 # remover.py
 from database import carregar_dados, salvar_dados
-from utils import ler_id_valido
+from validadores import ler_id_valido
 # Importa listar_clientes/carros/etc para exibir as opções
 from clientes import listar_clientes
 from carros import listar_carros

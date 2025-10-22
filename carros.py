@@ -1,7 +1,5 @@
-# carros.py - Refatorado para usar JSON e funções auxiliares do database/utils
 from database import carregar_dados, salvar_dados
-# Importa a função de utils, que agora é baseada em JSON
-from utils import buscar_cliente_por_id, listar_carros_por_cliente 
+from buscar_dados import buscar_cliente_por_id, listar_carros_por_cliente 
 
 def _gerar_novo_id(lista_registros):
     """Função auxiliar para gerar novo ID baseado na lista."""
