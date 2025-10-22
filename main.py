@@ -1,20 +1,13 @@
-# main.py
+# main.py - Menu principal atualizado
 from database import inicializar_arquivos
 from clientes import cadastrar_cliente, listar_clientes
 from carros import cadastrar_carro, listar_carros, listar_carros_cliente
-from lavagens import cadastrar_tipo_lavagem, listar_tipos_lavagem
+from lavagens import cadastrar_tipo_lavagem, listar_tipos_lavagem, criar_tipos_predefinidos
 from agendamentos import cadastrar_agendamento, listar_agendamentos
 from editar import editar_registro
-def menu_principal():
-    """Menu principal do sistema"""
-    
-    # Inicializar arquivos do banco de dados
-    inicializar_arquivos()
-    
-    # Criar tipos de lavagem pré-definidos se não existirem
-    from lavagens import criar_tipos_predefinidos
-    criar_tipos_predefinidos()
-    
+from remover import remover_registro # NOVO: Importa a função de remoção
+# from relatorios import menu_relatorios # Será importado na próxima fase
+
 def menu_principal():
     """Menu principal do sistema"""
     while True:
@@ -31,7 +24,9 @@ def menu_principal():
         print("8. Listar Carros de um Cliente")
         print("9. Listar Agendamentos")
         print("10. Editar Registro")
-        print("11. Sair")
+        print("11. Remover Registro") # NOVO: Opção 11
+        # print("12. Gerar Relatórios") # Será adicionado na próxima fase
+        print("12. Sair") # CORREÇÃO: Opção 12
         print("="*50)
         
         opcao = input("Escolha uma opção: ")
@@ -56,7 +51,11 @@ def menu_principal():
             listar_agendamentos()
         elif opcao == '10':
             editar_registro()
-        elif opcao == '10':
+        elif opcao == '11': # CHAMA A NOVA FUNÇÃO DE REMOÇÃO
+            remover_registro()
+        # elif opcao == '12': # RELATÓRIOS (Próxima fase)
+        #     menu_relatorios() 
+        elif opcao == '12':
             print("Saindo do sistema...")
             break
         else:
@@ -67,6 +66,8 @@ def menu_principal():
 def main():
     """Função principal"""
     inicializar_arquivos()
+    # Chama a função para garantir os tipos de lavagem essenciais
+    criar_tipos_predefinidos() 
     print("Sistema Lava Jato inicializado!")
     print("Arquivos de dados preparados.")
     menu_principal()
