@@ -3,7 +3,7 @@
 import json
 from database import carregar_dados, salvar_dados
 from datetime import datetime # Importa o módulo datetime
-from buscar_dados import buscar_cliente_por_id
+from buscar_dados import buscar_cliente_por_id, buscar_carro_por_id, buscar_lavagem_por_id
 
 
 def cadastrar_agendamento():
@@ -163,10 +163,9 @@ def cadastrar_agendamento():
 
 # ... (A função listar_agendamentos permanece igual)
 def listar_agendamentos():
-    """Lista todos os agendamentos"""
+    """Lista todos os agendamentos (Versão Limpa)"""
     dados = carregar_dados()
     
-    # ... (Resto da função listar_agendamentos)
     print("\n" + "=" * 60)
     print("📋 LISTA DE AGENDAMENTOS")
     print("=" * 60)
@@ -176,28 +175,18 @@ def listar_agendamentos():
         return
     
     for agendamento in dados['agendamentos']:
-        # Encontrar informações relacionadas
-        nome_cliente = "❌ Cliente não encontrado"
-        for cliente in dados.get('clientes', []):
-            if cliente['id'] == agendamento['id_cliente']:
-                nome_cliente = cliente['nome']
-                break
-        
-        modelo_carro = "❌ Carro não encontrado"
-        placa_carro = ""
-        for carro in dados.get('carros', []):
-            if carro['id'] == agendamento['id_carro']:
-                modelo_carro = carro['modelo']
-                placa_carro = carro.get('placa', 'N/A')
-                break
-        
-        descricao_lavagem = "❌ Lavagem não encontrada"
-        preco_lavagem = 0.0
-        for lavagem in dados.get('tipos_lavagem', []):
-            if lavagem['id'] == agendamento['id_lavagem']:
-                descricao_lavagem = lavagem['descricao']
-                preco_lavagem = lavagem['preco']
-                break
+        # Encontrar informações relacionadas (Busca Modular)
+        cliente = buscar_cliente_por_id(agendamento['id_cliente'])
+        nome_cliente = cliente['nome'] if cliente else "❌ Cliente não encontrado"
+
+        carro = buscar_carro_por_id(agendamento['id_carro'])
+        modelo_carro = carro.get('modelo', '❌ Carro não encontrado')
+        placa_carro = carro.get('placa', 'N/A')
+
+        # USAMOS A BUSCA MODULAR PARA LAVAGEM, REMOVENDO O LOOP MANUAL
+        lavagem = buscar_lavagem_por_id(agendamento['id_lavagem'])
+        descricao_lavagem = lavagem.get('descricao', '❌ Lavagem não encontrada')
+        preco_lavagem = lavagem.get('preco', 0.0)
         
         # Emojis para status
         emoji_status = {
