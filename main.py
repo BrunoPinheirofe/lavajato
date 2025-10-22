@@ -31,7 +31,7 @@ def menu_principal():
         print("8. Listar Carros de um Cliente")
         print("9. Listar Agendamentos")
         print("10. Editar Registro")
-        print("10. Sair")
+        print("11. Sair")
         print("="*50)
         
         opcao = input("Escolha uma opção: ")
