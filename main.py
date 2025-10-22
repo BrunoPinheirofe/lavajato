@@ -5,8 +5,7 @@ from carros import cadastrar_carro, listar_carros, listar_carros_cliente
 from lavagens import cadastrar_tipo_lavagem, listar_tipos_lavagem, criar_tipos_predefinidos
 from agendamentos import cadastrar_agendamento, listar_agendamentos
 from editar import editar_registro
-from remover import remover_registro # NOVO: Importa a função de remoção
-# from relatorios import menu_relatorios # Será importado na próxima fase
+from remover import remover_registro 
 
 def menu_principal():
     """Menu principal do sistema"""
@@ -24,9 +23,8 @@ def menu_principal():
         print("8. Listar Carros de um Cliente")
         print("9. Listar Agendamentos")
         print("10. Editar Registro")
-        print("11. Remover Registro") # NOVO: Opção 11
-        # print("12. Gerar Relatórios") # Será adicionado na próxima fase
-        print("12. Sair") # CORREÇÃO: Opção 12
+        print("11. Remover Registro") 
+        print("12. Sair")
         print("="*50)
         
         opcao = input("Escolha uma opção: ")
@@ -51,10 +49,9 @@ def menu_principal():
             listar_agendamentos()
         elif opcao == '10':
             editar_registro()
-        elif opcao == '11': # CHAMA A NOVA FUNÇÃO DE REMOÇÃO
+        elif opcao == '11': 
             remover_registro()
-        # elif opcao == '12': # RELATÓRIOS (Próxima fase)
-        #     menu_relatorios() 
+        
         elif opcao == '12':
             print("Saindo do sistema...")
             break
