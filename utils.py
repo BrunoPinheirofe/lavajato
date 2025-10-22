@@ -1,48 +1,44 @@
-# utils.py
-from database import *
+# utils.py - Refatorado para usar a estrutura de dados JSON em memória
+from database import carregar_dados
+
+def _buscar_entidade_por_id(nome_entidade, entidade_id):
+    """Função auxiliar genérica para buscar um registro pelo ID."""
+    
+    # Garante que o ID seja tratado como inteiro para comparação com dados JSON
+    try:
+        entidade_id = int(entidade_id)
+    except ValueError:
+        return None
+        
+    dados = carregar_dados()
+    
+    # Busca o registro na lista correspondente, retornando None se não encontrar
+    registro_encontrado = next((registro for registro in dados.get(nome_entidade, []) if registro.get('id') == entidade_id), None)
+    
+    return registro_encontrado
 
 def buscar_cliente_por_id(cliente_id):
     """Busca cliente pelo ID"""
-    try:
-        with open(ARQUIVO_CLIENTES, 'r', encoding='utf-8') as f:
-            for linha in f.readlines()[1:]:
-                dados = linha.strip().split('|')
-                if dados[0] == cliente_id:
-                    return {'id': dados[0], 'nome': dados[1], 'telefone': dados[2], 'email': dados[3]}
-    except:
-        return None
+    return _buscar_entidade_por_id('clientes', cliente_id)
 
 def buscar_carro_por_id(carro_id):
     """Busca carro pelo ID"""
-    try:
-        with open(ARQUIVO_CARROS, 'r', encoding='utf-8') as f:
-            for linha in f.readlines()[1:]:
-                dados = linha.strip().split('|')
-                if dados[0] == carro_id:
-                    return {'id': dados[0], 'cliente_id': dados[1], 'modelo': dados[2], 'marca': dados[3], 'placa': dados[4], 'ano': dados[5]}
-    except:
-        return None
+    return _buscar_entidade_por_id('carros', carro_id)
 
 def buscar_lavagem_por_id(lavagem_id):
     """Busca tipo de lavagem pelo ID"""
-    try:
-        with open(ARQUIVO_LAVAGENS, 'r', encoding='utf-8') as f:
-            for linha in f.readlines()[1:]:
-                dados = linha.strip().split('|')
-                if dados[0] == lavagem_id:
-                    return {'id': dados[0], 'tipo': dados[1], 'descricao': dados[2], 'preco': dados[3], 'tempo': dados[4]}
-    except:
-        return None
+    return _buscar_entidade_por_id('tipos_lavagem', lavagem_id)
 
 def listar_carros_por_cliente(cliente_id):
     """Lista todos os carros de um cliente"""
-    carros = []
     try:
-        with open(ARQUIVO_CARROS, 'r', encoding='utf-8') as f:
-            for linha in f.readlines()[1:]:
-                dados = linha.strip().split('|')
-                if dados[1] == cliente_id:
-                    carros.append({'id': dados[0], 'modelo': dados[2], 'marca': dados[3], 'placa': dados[4], 'ano': dados[5]})
-    except:
-        pass
+        cliente_id = int(cliente_id)
+    except ValueError:
+        return []
+        
+    dados = carregar_dados()
+    
+    # Filtra e retorna apenas os carros que pertencem ao cliente
+    carros = [carro for carro in dados.get('carros', []) if carro.get('id_cliente') == cliente_id]
+    
     return carros
