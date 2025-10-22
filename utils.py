@@ -1,10 +1,36 @@
-# utils.py - Refatorado para usar a estrutura de dados JSON em memória
+
 from database import carregar_dados
+
+
+def ler_id_valido(prompt):
+    """Lê um input e garante que seja um ID (inteiro positivo)."""
+    while True:
+        try:
+            valor = input(prompt)
+            id_int = int(valor)
+            if id_int > 0:
+                return id_int
+            else:
+                print("ID deve ser um número positivo. Tente novamente.")
+        except ValueError:
+            print("Entrada inválida. Digite um número inteiro.")
+
+def ler_float_valido(prompt):
+    """Lê um input e garante que seja um valor numérico válido (float)."""
+    while True:
+        try:
+            # Substitui vírgula por ponto e remove 'R$' para facilitar a conversão
+            valor = input(prompt).replace('R$', '').replace(',', '.').strip()
+            if not valor:
+                return None # Permite que o usuário deixe em branco na edição
+            return float(valor)
+        except ValueError:
+            print("Entrada inválida. Digite um valor numérico válido.")
+
+# --- FUNÇÕES DE BUSCA JSON  ---
 
 def _buscar_entidade_por_id(nome_entidade, entidade_id):
     """Função auxiliar genérica para buscar um registro pelo ID."""
-    
-    # Garante que o ID seja tratado como inteiro para comparação com dados JSON
     try:
         entidade_id = int(entidade_id)
     except ValueError:
@@ -12,7 +38,6 @@ def _buscar_entidade_por_id(nome_entidade, entidade_id):
         
     dados = carregar_dados()
     
-    # Busca o registro na lista correspondente, retornando None se não encontrar
     registro_encontrado = next((registro for registro in dados.get(nome_entidade, []) if registro.get('id') == entidade_id), None)
     
     return registro_encontrado
@@ -38,7 +63,6 @@ def listar_carros_por_cliente(cliente_id):
         
     dados = carregar_dados()
     
-    # Filtra e retorna apenas os carros que pertencem ao cliente
     carros = [carro for carro in dados.get('carros', []) if carro.get('id_cliente') == cliente_id]
     
     return carros
