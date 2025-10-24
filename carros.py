@@ -1,21 +1,44 @@
-# carros.py
-from database import *
-from utils import buscar_cliente_por_id
+from database import carregar_dados, salvar_dados
+from buscar_dados import buscar_cliente_por_id, listar_carros_por_cliente 
+
+def _gerar_novo_id(lista_registros):
+    """Função auxiliar para gerar novo ID baseado na lista."""
+    if lista_registros:
+        return max(registro['id'] for registro in lista_registros) + 1
+    return 1
 
 def cadastrar_carro_para_cliente(cliente_id, nome_cliente):
     """Cadastra carro para um cliente específico"""
+    dados = carregar_dados()
+    
+    # Garante que cliente_id seja um inteiro para o formato JSON
+    try:
+        cliente_id_int = int(cliente_id)
+    except ValueError:
+        print("Erro: ID de cliente inválido.")
+        return
+    
     print(f"\n" + "="*50)
     print(f"CADASTRO DE CARRO PARA: {nome_cliente}")
     print("="*50)
     
-    novo_id = gerar_novo_id(ARQUIVO_CARROS)
+    # Campos padronizados para o modelo JSON (modelo, placa, cor)
     modelo = input("Modelo do carro: ")
-    marca = input("Marca: ")
     placa = input("Placa: ")
-    ano = input("Ano: ")
+    cor = input("Cor: ") 
     
-    linha = f"{novo_id}|{cliente_id}|{modelo}|{marca}|{placa}|{ano}"
-    escrever_linha(ARQUIVO_CARROS, linha)
+    novo_id = _gerar_novo_id(dados['carros'])
+    
+    novo_carro = {
+        'id': novo_id,
+        'id_cliente': cliente_id_int,
+        'modelo': modelo,
+        'placa': placa,
+        'cor': cor
+    }
+    
+    dados['carros'].append(novo_carro)
+    salvar_dados(dados)
     
     print(f"\nCarro '{modelo}' cadastrado com sucesso para {nome_cliente}! (ID: {novo_id})")
 
@@ -25,30 +48,41 @@ def cadastrar_carro():
     print("CADASTRO DE CARRO")
     print("="*50)
     
+    # A importação local de clientes.py é mantida para evitar dependência circular
     from clientes import listar_clientes
     listar_clientes()
     
-    cliente_id = input("\nID do cliente: ")
-    cliente = buscar_cliente_por_id(cliente_id)
+    cliente_id_str = input("\nID do cliente: ")
+    cliente = buscar_cliente_por_id(cliente_id_str) 
     
     if not cliente:
         print("Cliente não encontrado!")
         return
     
-    cadastrar_carro_para_cliente(cliente_id, cliente['nome'])
+    cadastrar_carro_para_cliente(cliente_id_str, cliente['nome'])
 
 def listar_carros():
     """Lista todos os carros"""
+    dados = carregar_dados()
+    
     print("\n" + "="*50)
     print("CARROS CADASTRADOS")
     print("="*50)
     
-    conteudo = ler_arquivo(ARQUIVO_CARROS)
-    print(conteudo if conteudo else "Nenhum carro cadastrado ainda.")
+    if not dados['carros']:
+        print("Nenhum carro cadastrado ainda.")
+        return
+        
+    for carro in dados['carros']:
+        # Busca o nome do cliente para exibição (usando a função de utils.py)
+        cliente = buscar_cliente_por_id(carro['id_cliente'])
+        nome_cliente = cliente['nome'] if cliente else "Cliente não encontrado"
+        
+        print(f"ID: {carro['id']} | Modelo: {carro['modelo']} | Placa: {carro['placa']} | Cor: {carro['cor']} | Cliente: {nome_cliente}")
 
 def listar_carros_cliente(cliente_id=None):
     """Lista carros de um cliente específico"""
-    from utils import buscar_cliente_por_id, listar_carros_por_cliente
+    # utils é importado acima
     
     if cliente_id is None:
         cliente_id = input("ID do cliente: ")
@@ -62,10 +96,10 @@ def listar_carros_cliente(cliente_id=None):
     print(f"CARROS DO CLIENTE: {cliente['nome']}")
     print("="*50)
     
-    carros = listar_carros_por_cliente(cliente_id)
+    carros = listar_carros_por_cliente(cliente_id) 
     if not carros:
         print("Nenhum carro cadastrado para este cliente.")
         return
     
     for carro in carros:
-        print(f"ID: {carro['id']} - {carro['marca']} {carro['modelo']} - Placa: {carro['placa']} - Ano: {carro['ano']}")
+        print(f"ID: {carro['id']} - {carro['modelo']} - Placa: {carro['placa']} - Cor: {carro['cor']}")
