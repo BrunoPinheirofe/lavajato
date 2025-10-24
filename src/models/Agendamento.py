@@ -11,6 +11,8 @@ class Agendamento(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     data_hora: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     cliente_id: Mapped[int] = mapped_column(ForeignKey('tb_clientes.id'), nullable=False)
+    id_carro: Mapped[int] = mapped_column(ForeignKey('tb_carros.id'), nullable=False)
     tipo_lavagem_id: Mapped[int] = mapped_column(ForeignKey('tb_tipos-lavagem.id'), nullable=False)
-    status: Mapped[str] = mapped_column(nullable=False)
+    data: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    status: Mapped[str] = mapped_column(nullable=False) # e.g., 'agendado', 'concluído', 'cancelado'
     
