@@ -1,5 +1,5 @@
 from sqlite3 import IntegrityError
-from models.Cliente import Cliente
+from models.model import Cliente
 
 
 class ClienteRepository:
@@ -24,6 +24,9 @@ class ClienteRepository:
 
     def get_cliente(self, cliente_id):
         return self.db_session.query(Cliente).filter(Cliente.id == cliente_id).first()
+
+    def get_all_clientes(self):
+        return self.db_session.query(Cliente).all()
 
     def update_cliente(self, cliente_id, cliente_data):
         cliente = self.get_cliente(cliente_id)
