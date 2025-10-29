@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Clientes</title>
+</head>
+
+<body>
+  <h1>👥 Clientes Cadastrados</h1>
+  <p><a href="/">Voltar para o Início</a> | <a href="/clientes/novo">➕ Cadastrar Novo Cliente</a></p>
+
+  {# BLOCO PARA EXIBIR MENSAGENS FLASH #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <ul class=flashes style="list-style: none; padding: 0;">
+    {% for category, message in messages %}
+    {# Mensagem de Sucesso #}
+    <li
+      style="color: darkgreen; border: 1px solid darkgreen; background: lightgreen; padding: 10px; margin-bottom: 10px;">
+      {{ message }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+  {% if clientes %}
+  <table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>E-mail</th>
+        <th>Carros Cadastrados</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cliente in clientes %}
+      <tr>
+        <td>{{ cliente.id }}</td>
+        <td>{{ cliente.nome }}</td>
+        <td>{{ cliente.telefone }}</td>
+        <td>{{ cliente.email }}</td>
+        <td>{{ cliente.total_carros }}</td>
+        <td>
+          <a href="/clientes/{{ cliente.id }}/editar">Editar</a>
+
+          {# Formulário de Exclusão com ação dinâmica #}
+          <form method="POST" action="/clientes/{{ cliente.id }}/excluir" style="display: inline; margin-left: 10px;">
+            <button type="submit"
+              onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?')"
+              style="color: red; background: none; border: none; cursor: pointer;">
+              Excluir
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>📭 Nenhum cliente cadastrado. Clique no botão acima para adicionar um!</p>
+  {% endif %}
+
+</body>
+
+</html>

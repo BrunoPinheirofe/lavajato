@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Agendamentos</title>
+    <style>
+        /* Estilos simples para o status */
+        .status-Agendado {
+            color: blue;
+            font-weight: bold;
+        }
+
+        .status-Concluído {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-Cancelado {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📋 Agendamentos</h1>
+    <p><a href="/">Voltar para o Início</a> | <a href="/agendamentos/novo">➕ Novo Agendamento</a></p>
+
+    {# Bloco de Mensagens Flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div style="padding: 10px; margin-bottom: 10px; border: 1px solid;">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% if agendamentos %}
+    <table border="1" cellpadding="10" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data / Hora</th>
+                <th>Cliente</th>
+                <th>Carro (Placa)</th>
+                <th>Serviço</th>
+                <th>Preço</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ag in agendamentos %}
+            <tr>
+                <td>{{ ag.id }}</td>
+                <td>{{ ag.data }} às {{ ag.hora }}</td>
+                <td>{{ ag.cliente_nome }}</td>
+                <td>{{ ag.carro_info }}</td>
+                <td>{{ ag.lavagem_descricao }}</td>
+                <td>R$ {{ "%.2f"|format(ag.lavagem_preco) }}</td>
+                <td class="status-{{ ag.status }}">
+                    {{ ag.status }}
+                </td>
+                <td>
+                    <a href="/agendamentos/{{ ag.id }}/editar">Editar Status</a>
+
+                    {# Formulário de Exclusão com ação dinâmica #}
+                    <form method="POST" action="/agendamentos/{{ ag.id }}/excluir"
+                        style="display: inline; margin-left: 10px;">
+                        <button type="submit"
+                            onclick="return confirm('Tem certeza que deseja excluir o Agendamento #{{ ag.id }}?')"
+                            style="color: red; background: none; border: none; cursor: pointer;">
+                            Excluir
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>📭 Nenhum agendamento encontrado.</p>
+    {% endif %}
+
+</body>
+
+</html>

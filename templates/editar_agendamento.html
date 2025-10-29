@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Agendamento #{{ agendamento.id }}</title>
+</head>
+<body>
+    <h1>✏️ Editar Agendamento #{{ agendamento.id }}</h1>
+    <p><a href="/agendamentos">Voltar para a Lista de Agendamentos</a></p>
+    
+    <hr>
+
+    <form method="POST" action="/agendamentos/{{ agendamento.id }}/editar">
+        
+        <label for="status">Novo Status:</label><br>
+        <select id="status" name="status" required>
+            <option value="">-- Selecione o Novo Status --</option>
+            {% for status in status_opcoes %}
+                <option value="{{ status }}" {% if status == agendamento.status %}selected{% endif %}>
+                    {{ status }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Atualizar Status</button>
+    </form>
+</body>
+</html>

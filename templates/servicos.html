@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Serviços</title>
+</head>
+<body>
+    <h1>🧼 Catálogo de Serviços</h1>
+    <p><a href="/">Voltar para o Início</a></p>
+
+    {% if servicos %}
+    <table border="1" cellpadding="10" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Serviço</th>
+                <th>Preço</th>
+                <th>Tempo Médio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# O Jinja2 'for' itera sobre a lista 'servicos' enviada pelo Flask #}
+            {% for servico in servicos %}
+            <tr>
+                <td>{{ servico.id }}</td>
+                <td>{{ servico.descricao }}</td>
+                <td>R$ {{ "%.2f"|format(servico.preco) }}</td>
+                <td>{{ servico.tempo_medio }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>📭 Nenhum tipo de lavagem cadastrado. Verifique a inicialização dos dados.</p>
+    {% endif %}
+
+</body>
+</html>

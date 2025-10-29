@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Carros</title>
+</head>
+
+<body>
+    <h1>🚗 Carros Cadastrados</h1>
+    <p><a href="/">Voltar para o Início</a> | <a href="/carros/novo">➕ Cadastrar Novo Carro</a></p>
+
+    {# BLOCL DE MENSAGENS FLASH (opcional, mas bom para feedback) #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div
+        style="color: darkgreen; border: 1px solid darkgreen; background: lightgreen; padding: 10px; margin-bottom: 10px;">
+        {{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% if carros %}
+    <table border="1" cellpadding="10" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Modelo</th>
+                <th>Marca</th>
+                <th>Placa</th>
+                <th>Cor</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for carro in carros %}
+            <tr>
+                <td>{{ carro.id }}</td>
+                <td>{{ carro.nome_cliente }} (ID: {{ carro.id_cliente }})</td>
+                <td>{{ carro.modelo }}</td>
+                <td>{{ carro.marca }}</td>
+                <td>{{ carro.placa }}</td>
+                <td>{{ carro.cor if carro.cor else '-' }}</td>
+                <td>
+                    <a href="/carros/{{ carro.id }}/editar">Editar</a>
+
+                    {# Formulário de Exclusão com ação dinâmica #}
+                    <form method="POST" action="/carros/{{ carro.id }}/excluir"
+                        style="display: inline; margin-left: 10px;">
+                        <button type="submit"
+                            onclick="return confirm('Tem certeza que deseja excluir o Carro Placa {{ carro.placa }}?')"
+                            style="color: red; background: none; border: none; cursor: pointer;">
+                            Excluir
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>📭 Nenhum carro cadastrado. Adicione um para começar a agendar!</p>
+    {% endif %}
+
+</body>
+
+</html>

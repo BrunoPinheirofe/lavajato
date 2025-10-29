@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Carro</title>
+</head>
+<body>
+    <h1>🚗 Cadastro de Novo Carro</h1>
+    <p><a href="/carros">Voltar para a Lista de Carros</a></p>
+
+    <form method="POST" action="/carros/novo">
+        <label for="id_cliente">Dono do Carro (Cliente):</label><br>
+        {# O campo 'select' é crucial para relacionar Carro com Cliente #}
+        <select id="id_cliente" name="id_cliente" required>
+            <option value="">-- Selecione o Cliente --</option>
+            {% for cliente in clientes %}
+                {# O 'value' é o ID que será enviado no POST #}
+                <option value="{{ cliente.id }}">{{ cliente.nome }} (ID: {{ cliente.id }})</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="modelo">Modelo:</label><br>
+        <input type="text" id="modelo" name="modelo" required><br><br>
+
+        <label for="marca">Marca:</label><br>
+        <input type="text" id="marca" name="marca" required><br><br>
+        
+        <label for="placa">Placa:</label><br>
+        <input type="text" id="placa" name="placa" required><br><br>
+
+        <label for="cor">Cor:</label><br>
+        <input type="text" id="cor" name="cor"><br><br>
+
+        <button type="submit">Cadastrar Carro</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Agendamento</title>
+</head>
+<body>
+    <h1>📅 Novo Agendamento de Serviço</h1>
+    <p><a href="/agendamentos">Voltar para a Lista de Agendamentos</a></p>
+
+    <form method="POST" action="/agendamentos/novo">
+        
+        <label for="id_cliente">Cliente:</label><br>
+        <select id="id_cliente" name="id_cliente" required>
+            <option value="">-- Selecione o Cliente --</option>
+            {% for cliente in clientes %}
+                <option value="{{ cliente.id }}">{{ cliente.nome }} (ID: {{ cliente.id }})</option>
+            {% endfor %}
+        </select><br><br>
+
+        {# 💡 O ideal seria filtrar a lista de carros dinamicamente com JavaScript, 
+           mas por simplicidade no Flask, vamos listar todos e o usuário escolhe. #}
+        <label for="id_carro">Carro (Placa/Modelo):</label><br>
+        <select id="id_carro" name="id_carro" required>
+            <option value="">-- Selecione o Carro --</option>
+            {% for carro in carros %}
+                <option value="{{ carro.id }}">{{ carro.placa }} - {{ carro.modelo }} (Cliente ID: {{ carro.id_cliente }})</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="id_lavagem">Tipo de Serviço:</label><br>
+        <select id="id_lavagem" name="id_lavagem" required>
+            <option value="">-- Selecione o Serviço --</option>
+            {% for lavagem in lavagens %}
+                <option value="{{ lavagem.id }}">
+                    {{ lavagem.descricao }} (R$ {{ "%.2f"|format(lavagem.preco) }})
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="data">Data do Agendamento:</label><br>
+        <input type="date" id="data" name="data" required><br><br>
+
+        <label for="hora">Hora do Agendamento:</label><br>
+        <input type="time" id="hora" name="hora" required><br><br>
+
+        <button type="submit">Finalizar Agendamento</button>
+    </form>
+</body>
+</html>
