@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo de Serviços</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>CarWashApp - Catálogo de Serviços</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='src/img/carwashappicon.png') }}" type="image/x-icon">
     <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,62 +14,91 @@
         rel="stylesheet">
 </head>
 
-<body class="font-['Poppins']">
+<body class="font-['Poppins'] bg-gray-50">
     <header class="bg-blue-500 text-left">
-        <div class="p-7">
-            <p class="font-bold text-xl text-white">CarWashApp</p>
+        <div class="p-5 flex flex-row items-center gap-4">
+            <a href="/"><p class="font-bold text-xl text-white text-center">CarWashApp</p></a>
         </div>
-        <div class="bg-white flex justify-center items-center p-5 border-b shadow-lg">
-            <nav>
-                <ul class="flex flex-row text-center gap-10">
-                    <li><a href="/servicos"
-                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo
-                            de Serviços</a></li>
-                    <li><a href="/clientes"
-                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar
-                            Clientes</a></li>
-                    <li><a href="/carros"
-                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar
-                            Carros</a></li>
-                    <li><a href="/agendamentos"
-                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar
-                            Agendamentos</a></li>
+        
+        <div class="bg-white flex justify-between md:justify-center items-center p-5 border-b shadow-lg">
+            <nav class="w-full md:w-auto">
+                <button id="menu-btn" class="md:hidden text-gray-800 p-2 rounded-lg hover:bg-gray-100 transition duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+                
+                <ul id="menu-links" class="hidden flex-col md:flex md:flex-row text-left md:text-center gap-2 md:gap-10 mt-3 md:mt-0 w-full absolute md:static bg-white md:bg-transparent shadow-lg md:shadow-none left-0 z-10 p-4 md:p-0">
+                    <li><a href="/" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Início/Dashboard</a></li>
+                    <li><a href="/servicos" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo de Serviços</a></li>
+                    <li><a href="/clientes" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Clientes</a></li>
+                    <li><a href="/carros" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Carros</a></li>
+                    <li><a href="/agendamentos" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar Agendamentos</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <h1 class="text-center text-3xl font-bold p-5">Catálogo de Serviços 🧼</h1>
+    <main class="p-4 md:p-8">
+        <div class="max-w-screen-xl mx-auto"> 
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b pb-4">
+                <h1 class="text-3xl font-bold">Catálogo de Serviços</h1>
+                
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto">
+                    <a href="/" class="bg-blue-500 px-4 py-2 rounded-lg text-white font-medium hover:bg-blue-600 transition duration-150 text-center">Voltar para o Início</a>
+                    <a href="/servicos/novo" class="bg-blue-500 px-4 py-2 rounded-lg text-white font-medium hover:bg-blue-600 transition duration-150 text-center">Cadastrar Novo Serviço</a>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-center items-center">
+                {% if servicos %}
+                <div class="w-full overflow-x-auto border border-2 rounded-lg shadow-xl">
+                    
+                    <table class="w-full text-center min-w-max">
+                        <thead class="border-b border-2 bg-[#e6e6e6]">
+                            <tr>
+                                <th class="p-3 whitespace-nowrap">ID</th>
+                                <th class="p-3 whitespace-nowrap">Serviço</th>
+                                <th class="p-3 whitespace-nowrap">Preço</th>
+                                <th class="p-3 whitespace-nowrap">Tempo Médio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for servico in servicos %}
+                            <tr class="border-b border-b-2 hover:bg-gray-50">
+                                <td class="p-3 whitespace-nowrap">{{ servico.id }}</td>
+                                <td class="p-3 font-semibold whitespace-nowrap">{{ servico.descricao }}</td>
+                                <td class="p-3 whitespace-nowrap">R$ {{ "%.2f"|format(servico.preco) }}</td>
+                                <td class="p-3 whitespace-nowrap">{{ servico.tempo_medio }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="mt-10 text-gray-600">📭 Nenhum tipo de lavagem cadastrado. Clique em "Cadastrar Novo Serviço" para adicionar.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+    </main>
     
-    {% if servicos %}
-    <div class="flex justify-center items-center">
-        <table class="w-[700px] h-[200px] text-center">
-            <thead class="border bg-[#e6e6e6]">
-                <tr>
-                    <th>ID</th>
-                    <th>Serviço</th>
-                    <th>Preço</th>
-                    <th>Tempo Médio</th>
-                </tr>
-            </thead>
-            <tbody>
-                {# O Jinja2 'for' itera sobre a lista 'servicos' enviada pelo Flask #}
-                {% for servico in servicos %}
-                <tr class="border">
-                    <td>{{ servico.id }}</td>
-                    <td>{{ servico.descricao }}</td>
-                    <td>R$ {{ "%.2f"|format(servico.preco) }}</td>
-                    <td>{{ servico.tempo_medio }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>📭 Nenhum tipo de lavagem cadastrado. Verifique a inicialização dos dados.</p>
-        {% endif %}
-    </div>
-    <p class="text-center font-medium pt-20 transition duration-300 hover:text-blue-500 hover:underline underline-offset-2 decoration-2"><a href="/">Voltar para o Início</a></p>
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menu-btn');
+            const menuLinks = document.getElementById('menu-links');
+
+            if (menuBtn && menuLinks) {
+                menuBtn.addEventListener('click', function() {
+                    menuLinks.classList.toggle('hidden'); 
+                    if (!menuLinks.classList.contains('hidden')) {
+                        menuLinks.classList.add('flex');
+                    } else {
+                        menuLinks.classList.remove('flex');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

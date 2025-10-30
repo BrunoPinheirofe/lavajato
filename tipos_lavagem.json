@@ -16,5 +16,11 @@
     "descricao": "Lavagem Premium",
     "preco": 120.0,
     "tempo_medio": "120 minutos"
+  },
+  {
+    "id": 4,
+    "descricao": "sadas",
+    "tempo_medio": "60",
+    "preco": 67.77
   }
 ]

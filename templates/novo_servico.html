@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>CarWashApp - Novo Serviço</title>
     <link rel="shortcut icon" href="/static/src/img/carwashappicon.png" type="image/x-icon">
-    <title>CarWashApp - Novo Agendamento</title>
     <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,71 +37,56 @@
         </div>
     </header>
 
-    <main class="flex flex-col items-center p-4 md:p-8">
-        <div class="w-full max-w-lg bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-            <div class="flex justify-between items-center mb-6 border-b pb-3">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Novo Agendamento de Serviço</h1>
-                <a href="/agendamentos" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-medium transition duration-300 hover:bg-gray-300 whitespace-nowrap">
-                    Voltar
-                </a>
-            </div>
+    <main class="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] p-4 md:p-8">
+        <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">Novo Serviço de Lavagem</h1>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4 space-y-2">
+                        {% for category, message in messages %}
+                            <div class="p-3 rounded-lg text-sm text-center {% if category == 'danger' %}bg-red-100 text-red-700 border border-red-300{% elif category == 'success' %}bg-green-100 text-green-700 border border-green-300{% else %}bg-blue-100 text-blue-700 border border-blue-300{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-            <form method="POST" action="/agendamentos/novo" class="space-y-4">
+            <form action="/servicos/novo" method="POST" class="space-y-6">
                 
-                <div class="flex flex-col">
-                    <label for="id_cliente" class="font-medium text-gray-700 mb-1">Cliente:</label>
-                    <select id="id_cliente" name="id_cliente" required 
-                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
-                        <option value="">Selecione o Cliente</option>
-                        {% for cliente in clientes %}
-                            <option value="{{ cliente.id }}">{{ cliente.nome }} (ID: {{ cliente.id }})</option>
-                        {% endfor %}
-                    </select>
+                <div>
+                    <label for="descricao" class="block text-sm font-medium text-gray-700">Descrição do Serviço (Ex: Lavagem Premium)</label>
+                    <input type="text" name="descricao" id="descricao" required
+                        value="{{ descricao | default('') }}"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 </div>
 
-                <div class="flex flex-col">
-                    <label for="id_carro" class="font-medium text-gray-700 mb-1">Carro (Placa/Modelo):</label>
-                    <select id="id_carro" name="id_carro" required 
-                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
-                        <option value="">Selecione o Carro</option>
-                        {% for carro in carros %}
-                            <option value="{{ carro.id }}">{{ carro.placa }} - {{ carro.modelo }} (Cliente ID: {{ carro.id_cliente }})</option>
-                        {% endfor %}
-                    </select>
+                <div>
+                    <label for="preco" class="block text-sm font-medium text-gray-700">Preço (Ex: 45.90)</label>
+                    <input type="text" name="preco" id="preco" required 
+                        placeholder="Utilize ponto para decimais (ex: 45.90)"
+                        value="{{ preco_str | default('') }}"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 </div>
-
-                <div class="flex flex-col">
-                    <label for="id_lavagem" class="font-medium text-gray-700 mb-1">Tipo de Serviço:</label>
-                    <select id="id_lavagem" name="id_lavagem" required 
-                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
-                        <option value="">Selecione o Serviço</option>
-                        {% for lavagem in lavagens %}
-                            <option value="{{ lavagem.id }}">
-                                {{ lavagem.descricao }} (R$ {{ "%.2f"|format(lavagem.preco) }})
-                            </option>
-                        {% endfor %}
-                    </select>
+                
+                <div>
+                    <label for="tempo_medio" class="block text-sm font-medium text-gray-700">Tempo Médio (Ex: 45 minutos)</label>
+                    <input type="text" name="tempo_medio" id="tempo_medio" required
+                        value="{{ tempo_medio | default('') }}"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 </div>
-
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                
+                <div class="flex flex-col sm:flex-row justify-between items-center pt-4 gap-3">
+                    <a href="/servicos" class="inline-flex justify-center w-full sm:w-auto items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                        Cancelar
+                    </a>
                     
-                    <div class="flex flex-col w-full sm:w-1/2">
-                        <label for="data" class="font-medium text-gray-700 mb-1">Data do Agendamento:</label>
-                        <input type="date" id="data" name="data" required
-                               class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
-                    </div>
-
-                    <div class="flex flex-col w-full sm:w-1/2">
-                        <label for="hora" class="font-medium text-gray-700 mb-1">Hora do Agendamento:</label>
-                        <input type="time" id="hora" name="hora" required
-                               class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
-                    </div>
+                    <button type="submit" 
+                        class="inline-flex justify-center w-full sm:w-auto items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Cadastrar Serviço
+                    </button>
                 </div>
-
-                <button type="submit" 
-                        class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg transition duration-300 hover:bg-blue-700 mt-6">
-                    Finalizar Agendamento
-                </button>
             </form>
         </div>
     </main>
@@ -124,5 +109,4 @@
         });
     </script>
 </body>
-
 </html>

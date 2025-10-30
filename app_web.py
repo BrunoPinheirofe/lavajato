@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, flash
-from database import carregar_dados, salvar_dados # ESSENCIAL para carregar e salvar dados
+from database import carregar_dados, salvar_dados
 from datetime import datetime
 
 app = Flask(__name__)
@@ -9,10 +9,130 @@ app.secret_key = 'chave_secreta_do_lavajato_2025'
 # Status permitidos para Agendamento
 STATUS_AGENDAMENTO = ['Agendado', 'Em Andamento', 'Concluído', 'Cancelado']
 
-# --- ROTA RAIZ (index) ---
+# =======================================================
+# --- FUNÇÕES DE UTILIDADE (Acesso a Dados Limpos) ---
+# =======================================================
+
+def get_clientes_raw():
+    """Retorna a lista de clientes (dicts) do JSON."""
+    return carregar_dados().get('clientes', [])
+
+def get_carros_raw():
+    """Retorna a lista de carros (dicts) do JSON."""
+    return carregar_dados().get('carros', [])
+
+def get_lavagens_raw():
+    """Retorna a lista de lavagens (dicts) do JSON."""
+    return carregar_dados().get('tipos_lavagem', [])
+
+def get_agendamentos_raw():
+    """Retorna a lista de agendamentos (dicts) do JSON."""
+    return carregar_dados().get('agendamentos', [])
+
+def get_agendamentos_com_detalhes():
+    """Retorna a lista de agendamentos com detalhes de cliente, carro e serviço
+    anexados, no formato adequado para o Dashboard e listagens.
+    
+    Adiciona 'data_iso' (YYYY-MM-DD) para comparações internas.
+    """
+    dados = carregar_dados()
+    agendamentos = dados.get('agendamentos', [])
+    
+    clientes_map = {c['id']: c for c in dados.get('clientes', [])}
+    carros_map = {ca['id']: ca for ca in dados.get('carros', [])}
+    lavagens_map = {l['id']: l for l in dados.get('tipos_lavagem', [])}
+    
+    agendamentos_processados = []
+    for agendamento in agendamentos:
+        cliente = clientes_map.get(agendamento.get('id_cliente', 0), {'nome': 'Cliente Desconhecido'})
+        carro = carros_map.get(agendamento.get('id_carro', 0), {'modelo': 'Carro Desconhecido', 'placa': 'N/A'})
+        lavagem = lavagens_map.get(agendamento.get('id_lavagem', 0), {'descricao': 'Serviço Desconhecido', 'preco': 0.0})
+        
+        # Converte a data salva (DD/MM/YYYY) para ISO (YYYY-MM-DD) para consistência
+        try:
+            data_iso = datetime.strptime(agendamento.get('data'), '%d/%m/%Y').strftime('%Y-%m-%d')
+        except (ValueError, TypeError):
+            data_iso = "2999-01-01" # Coloca datas inválidas no futuro
+            
+        agendamentos_processados.append({
+            'id': agendamento.get('id'),
+            'data': agendamento.get('data'), # Formato de exibição: DD/MM/YYYY
+            'data_iso': data_iso, # Formato de comparação: YYYY-MM-DD (NOVO CAMPO)
+            'hora': agendamento.get('hora'),
+            'status': agendamento.get('status'),
+            'cliente_nome': cliente['nome'],
+            'carro_info': f"{carro['modelo']} ({carro['placa']})",
+            'lavagem_descricao': lavagem['descricao'],
+            'lavagem_preco': lavagem['preco']
+        })
+
+    # Ordena os agendamentos pela data (ISO) e hora
+    agendamentos_processados.sort(key=lambda x: (x.get('data_iso'), x.get('hora', '99:99')))
+    
+    return agendamentos_processados
+
+
+def calcular_metricas():
+    """Calcula as métricas chave para o Dashboard."""
+    
+    # 1. Utiliza as novas funções de utilidade
+    clientes = get_clientes_raw()
+    carros = get_carros_raw()
+    agendamentos_processados = get_agendamentos_com_detalhes() # Lista de dicionários
+    
+    total_clientes = len(clientes)
+    total_carros = len(carros)
+    
+    # 2. Corrigida a data para usar o formato ISO (YYYY-MM-DD) para comparação
+    hoje_str_iso = datetime.now().strftime('%Y-%m-%d')
+    
+    agendamentos_hoje = [
+        ag for ag in agendamentos_processados 
+        if ag.get('data_iso') == hoje_str_iso and ag.get('status') not in ['Cancelado', 'Concluído']
+    ]
+    
+    total_agendamentos_hoje = len(agendamentos_hoje)
+    
+    faturamento_mes = 0.0
+    mes_atual_iso = datetime.now().strftime('%Y-%m')
+    
+    for ag in agendamentos_processados:
+        # Usa 'data_iso' para checar o mês
+        if ag.get('status') == 'Concluído' and ag.get('data_iso', '').startswith(mes_atual_iso):
+            faturamento_mes += ag.get('lavagem_preco', 0.0)
+            
+    return{
+        'total_clientes': total_clientes,
+        'total_carros': total_carros,
+        'total_agendamentos_hoje': total_agendamentos_hoje,
+        'faturamento_mes': faturamento_mes
+    }
+
+# =======================================================
+# --- ROTAS DA APLICAÇÃO ---
+# =======================================================
+
+# --- ROTA RAIZ (Dashboard) ---
 @app.route('/')
-def index():
-    return render_template('index.html')
+def dashboard():
+    metricas = calcular_metricas()
+    
+    # Pega os 5 agendamentos mais próximos (já estão ordenados na função de detalhes)
+    agendamentos_proximos = get_agendamentos_com_detalhes()
+    
+    # Filtra apenas os agendamentos futuros ou de hoje (Agendado/Em Andamento)
+    hoje_str_iso = datetime.now().strftime('%Y-%m-%d')
+    
+    agendamentos_futuros = [
+        ag for ag in agendamentos_proximos 
+        if ag.get('status') in ['Agendado', 'Em Andamento'] and ag.get('data_iso') >= hoje_str_iso
+    ][:5] # Pega os 5 primeiros
+    
+    return render_template(
+        'index.html', # Alterado para dashboard.html
+        metricas=metricas,
+        agendamentos_proximos=agendamentos_futuros
+    )
 
 # ----------------------------------------
 # --- ROTAS DE CLIENTE (C, R, U, D) ---
@@ -20,12 +140,12 @@ def index():
 
 @app.route('/clientes')
 def listar_clientes_web():
-    dados = carregar_dados()
-    clientes = dados.get('clientes', [])
+    clientes = get_clientes_raw() # Usa a função de utilidade
     return render_template('clientes.html', clientes=clientes)
 
 @app.route('/clientes/novo', methods=['GET', 'POST'])
 def cadastrar_cliente_web():
+    # ... Lógica original ...
     if request.method == 'GET':
         return render_template('novo_cliente.html')
     
@@ -201,21 +321,40 @@ def listar_servicos_web():
 
 @app.route('/servicos/novo', methods=['GET', 'POST'])
 def cadastrar_servico_web():
+    # --- Requisição GET (Sem Alteração) ---
     if request.method == 'GET':
-        return render_template('novo_servico.html')
+        # Passa valores vazios para o template em GET
+        return render_template('novo_servico.html', descricao="", tempo_medio="", preco_str="")
     
+    # --- Requisição POST (Lógica de Validação Corrigida) ---
     if request.method == 'POST':
         dados = carregar_dados()
+        # Captura os dados submetidos (manteremos o que foi digitado)
         descricao = request.form.get('descricao')
         tempo_medio = request.form.get('tempo_medio')
         preco_str = request.form.get('preco')
         
+        # ⚠️ NOVO BLOCO DE VALIDAÇÃO DE CAMPOS VAZIOS (Recomendado)
+        if not descricao or not tempo_medio or not preco_str:
+            flash("❌ Todos os campos (Descrição, Tempo e Preço) são obrigatórios.", 'danger')
+            # CORREÇÃO: Renderiza o template de novo com os dados submetidos
+            return render_template('novo_servico.html', 
+                                   descricao=descricao, 
+                                   tempo_medio=tempo_medio, 
+                                   preco_str=preco_str)
+
         try:
+            # Tenta converter o preço, corrigindo vírgula para ponto
             preco = float(preco_str.replace(',', '.'))
         except ValueError:
             flash("❌ Preço deve ser um número válido (ex: 45.90).", 'danger')
-            return redirect('/servicos/novo')
+            # 🛑 CORREÇÃO PRINCIPAL: Renderiza o template de novo
+            return render_template('novo_servico.html', 
+                                   descricao=descricao, 
+                                   tempo_medio=tempo_medio, 
+                                   preco_str=preco_str) 
         
+        # Lógica de cadastro (SE DEU TUDO CERTO)
         novo_id = max((l['id'] for l in dados.get('tipos_lavagem', [])), default=0) + 1
         
         novo_servico = {
@@ -231,8 +370,9 @@ def cadastrar_servico_web():
         dados['tipos_lavagem'].append(novo_servico)
         salvar_dados(dados)
         
+        # SUCESSO: Redireciona
         flash(f'Serviço "{descricao}" cadastrado com sucesso! ID: {novo_id}', 'success')
-        return redirect('/servicos')
+        return redirect('/servicos') # Redirecionamento é bom APENAS para sucesso
 
 @app.route('/servicos/<int:lavagem_id>/editar', methods=['GET', 'POST'])
 def editar_lavagem_web(lavagem_id):
@@ -293,32 +433,8 @@ def excluir_lavagem_web(lavagem_id):
 
 @app.route('/agendamentos')
 def listar_agendamentos_web():
-    dados = carregar_dados()
-    agendamentos = dados.get('agendamentos', [])
-    
-    clientes_map = {c['id']: c for c in dados.get('clientes', [])}
-    carros_map = {ca['id']: ca for ca in dados.get('carros', [])}
-    lavagens_map = {l['id']: l for l in dados.get('tipos_lavagem', [])}
-    
-    agendamentos_processados = []
-    for agendamento in agendamentos:
-        cliente = clientes_map.get(agendamento['id_cliente'], {'nome': 'Cliente Desconhecido'})
-        carro = carros_map.get(agendamento['id_carro'], {'modelo': 'Carro Desconhecido', 'placa': 'N/A'})
-        lavagem = lavagens_map.get(agendamento['id_lavagem'], {'descricao': 'Serviço Desconhecido', 'preco': 0.0})
-        
-        agendamentos_processados.append({
-            'id': agendamento['id'],
-            'data': agendamento['data'],
-            'hora': agendamento['hora'],
-            'status': agendamento['status'],
-            'cliente_nome': cliente['nome'],
-            'carro_info': f"{carro['modelo']} ({carro['placa']})",
-            'lavagem_descricao': lavagem['descricao'],
-            'lavagem_preco': lavagem['preco']
-        })
-
-    # Ordena os agendamentos pela data e hora
-    agendamentos_processados.sort(key=lambda x: datetime.strptime(f"{x['data']} {x['hora']}", '%d/%m/%Y %H:%M'))
+    # Usa a função de utilidade para obter a lista processada e ordenada
+    agendamentos_processados = get_agendamentos_com_detalhes() 
     
     return render_template('agendamentos.html', agendamentos=agendamentos_processados)
 
@@ -347,6 +463,7 @@ def cadastrar_agendamento_web():
         hora = request.form.get('hora')
         
         try:
+            # Converte a data de YYYY-MM-DD (input HTML) para DD/MM/YYYY (storage)
             data_formatada = datetime.strptime(data, '%Y-%m-%d').strftime('%d/%m/%Y')
         except ValueError:
             flash("❌ Data inválida.", 'danger')
@@ -376,24 +493,24 @@ def cadastrar_agendamento_web():
 @app.route('/agendamentos/<int:agendamento_id>')
 def detalhes_agendamento_web(agendamento_id):
     dados = carregar_dados()
-    agendamento = next((ag for ag in dados.get('agendamentos', []) if ag['id'] == agendamento_id), None)
+    agendamento_info = get_agendamentos_com_detalhes()
+    agendamento_detalhe = next((ag for ag in agendamento_info if ag['id'] == agendamento_id), None)
     
-    if not agendamento:
+    if not agendamento_detalhe:
         flash(f"❌ Agendamento ID {agendamento_id} não encontrado.", 'danger')
         return redirect('/agendamentos') 
     
-    # Mapeamentos completos para a página de detalhes
+    # Busca os dados brutos para a página de detalhes
     clientes_map = {c['id']: c for c in dados.get('clientes', [])}
     carros_map = {ca['id']: ca for ca in dados.get('carros', [])}
     lavagens_map = {l['id']: l for l in dados.get('tipos_lavagem', [])}
     
-    # Busca com fallbacks para evitar erros de chave (KeyError)
-    cliente = clientes_map.get(agendamento['id_cliente'], {'nome': 'Desconhecido', 'id': agendamento['id_cliente'], 'telefone': 'N/A', 'email': 'N/A'})
-    carro = carros_map.get(agendamento['id_carro'], {'modelo': 'Desconhecido', 'placa': 'N/A', 'id': agendamento['id_carro'], 'marca': 'N/A', 'cor': 'N/A'})
-    lavagem = lavagens_map.get(agendamento['id_lavagem'], {'descricao': 'Desconhecido', 'preco': 0.0, 'id': agendamento['id_lavagem'], 'tempo_medio': 'N/A'})
+    cliente = clientes_map.get(agendamento_detalhe['id_cliente'], {'nome': 'Desconhecido', 'id': agendamento_detalhe['id_cliente'], 'telefone': 'N/A', 'email': 'N/A'})
+    carro = carros_map.get(agendamento_detalhe['id_carro'], {'modelo': 'Desconhecido', 'placa': 'N/A', 'id': agendamento_detalhe['id_carro'], 'marca': 'N/A', 'cor': 'N/A'})
+    lavagem = lavagens_map.get(agendamento_detalhe['id_lavagem'], {'descricao': 'Desconhecido', 'preco': 0.0, 'id': agendamento_detalhe['id_lavagem'], 'tempo_medio': 'N/A'})
     
     contexto = {
-        'agendamento': agendamento,
+        'agendamento': agendamento_detalhe,
         'cliente': cliente,
         'carro': carro,
         'lavagem': lavagem
