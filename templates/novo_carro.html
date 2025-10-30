@@ -1,37 +1,93 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Novo Carro</title>
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 </head>
-<body>
-    <h1>🚗 Cadastro de Novo Carro</h1>
-    <p><a href="/carros">Voltar para a Lista de Carros</a></p>
 
-    <form method="POST" action="/carros/novo">
-        <label for="id_cliente">Dono do Carro (Cliente):</label><br>
-        {# O campo 'select' é crucial para relacionar Carro com Cliente #}
-        <select id="id_cliente" name="id_cliente" required>
-            <option value="">-- Selecione o Cliente --</option>
-            {% for cliente in clientes %}
-                {# O 'value' é o ID que será enviado no POST #}
-                <option value="{{ cliente.id }}">{{ cliente.nome }} (ID: {{ cliente.id }})</option>
-            {% endfor %}
-        </select><br><br>
+<body class="font-['Poppins'] bg-gray-50">
+    <header class="bg-blue-500 text-left">
+        <div class="p-7">
+            <p class="font-bold text-xl text-white">CarWashApp</p>
+        </div>
+        <div class="bg-white flex justify-center items-center p-5 border-b shadow-lg">
+            <nav>
+                <ul class="flex flex-row text-center gap-10">
+                    <li><a href="/servicos" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo de Serviços</a></li>
+                    <li><a href="/clientes" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Clientes</a></li>
+                    <li><a href="/carros" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Carros</a></li>
+                    <li><a href="/agendamentos" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <label for="modelo">Modelo:</label><br>
-        <input type="text" id="modelo" name="modelo" required><br><br>
+    <main class="flex flex-col items-center p-8">
+        <div class="w-full max-w-lg bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <h1 class="text-3xl font-bold text-gray-800">Cadastro de Novo Carro</h1>
+                <a href="/carros" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-medium transition duration-300 hover:bg-gray-300">
+                    Voltar
+                </a>
+            </div>
 
-        <label for="marca">Marca:</label><br>
-        <input type="text" id="marca" name="marca" required><br><br>
-        
-        <label for="placa">Placa:</label><br>
-        <input type="text" id="placa" name="placa" required><br><br>
+            <form method="POST" action="/carros/novo" class="space-y-4">
+                
+                {# Campo Cliente (Select) #}
+                <div class="flex flex-col">
+                    <label for="id_cliente" class="font-medium text-gray-700 mb-1">Dono do Carro (Cliente):</label>
+                    <select id="id_cliente" name="id_cliente" required 
+                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">-- Selecione o Cliente --</option>
+                        {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}">{{ cliente.nome }} (ID: {{ cliente.id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <label for="cor">Cor:</label><br>
-        <input type="text" id="cor" name="cor"><br><br>
+                {# Campo Modelo #}
+                <div class="flex flex-col">
+                    <label for="modelo" class="font-medium text-gray-700 mb-1">Modelo:</label>
+                    <input type="text" id="modelo" name="modelo" required
+                           class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
 
-        <button type="submit">Cadastrar Carro</button>
-    </form>
+                {# Campo Marca #}
+                <div class="flex flex-col">
+                    <label for="marca" class="font-medium text-gray-700 mb-1">Marca:</label>
+                    <input type="text" id="marca" name="marca" required
+                           class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                {# Campo Placa #}
+                <div class="flex flex-col">
+                    <label for="placa" class="font-medium text-gray-700 mb-1">Placa:</label>
+                    <input type="text" id="placa" name="placa" required
+                           class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 uppercase tracking-wider">
+                </div>
+
+                {# Campo Cor #}
+                <div class="flex flex-col">
+                    <label for="cor" class="font-medium text-gray-700 mb-1">Cor:</label>
+                    <input type="text" id="cor" name="cor"
+                           class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                {# Botão de Submissão #}
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg transition duration-300 hover:bg-blue-700 mt-6">
+                    Cadastrar Carro
+                </button>
+            </form>
+        </div>
+    </main>
 </body>
+
 </html>

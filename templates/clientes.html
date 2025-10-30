@@ -4,66 +4,98 @@
 <head>
   <meta charset="UTF-8">
   <title>Lista de Clientes</title>
+  <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
 </head>
 
-<body>
-  <h1>👥 Clientes Cadastrados</h1>
-  <p><a href="/">Voltar para o Início</a> | <a href="/clientes/novo">➕ Cadastrar Novo Cliente</a></p>
+<body class="font-['Poppins']">
+    <header class="bg-blue-500 text-left">
+        <div class="p-7">
+            <p class="font-bold text-xl text-white">CarWashApp</p>
+        </div>
+        <div class="bg-white flex justify-center items-center p-5 border-b shadow-lg">
+            <nav>
+                <ul class="flex flex-row text-center gap-10">
+                    <li><a href="/servicos" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo de Serviços</a></li>
+                    <li><a href="/clientes" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Clientes</a></li>
+                    <li><a href="/carros" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Carros</a></li>
+                    <li><a href="/agendamentos" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-  {# BLOCO PARA EXIBIR MENSAGENS FLASH #}
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  <ul class=flashes style="list-style: none; padding: 0;">
-    {% for category, message in messages %}
-    {# Mensagem de Sucesso #}
-    <li
-      style="color: darkgreen; border: 1px solid darkgreen; background: lightgreen; padding: 10px; margin-bottom: 10px;">
-      {{ message }}
-    </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  {% endwith %}
-
-  {% if clientes %}
-  <table border="1" cellpadding="10" cellspacing="0" width="100%">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Telefone</th>
-        <th>E-mail</th>
-        <th>Carros Cadastrados</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for cliente in clientes %}
-      <tr>
-        <td>{{ cliente.id }}</td>
-        <td>{{ cliente.nome }}</td>
-        <td>{{ cliente.telefone }}</td>
-        <td>{{ cliente.email }}</td>
-        <td>{{ cliente.total_carros }}</td>
-        <td>
-          <a href="/clientes/{{ cliente.id }}/editar">Editar</a>
-
-          {# Formulário de Exclusão com ação dinâmica #}
-          <form method="POST" action="/clientes/{{ cliente.id }}/excluir" style="display: inline; margin-left: 10px;">
-            <button type="submit"
-              onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?')"
-              style="color: red; background: none; border: none; cursor: pointer;">
-              Excluir
-            </button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p>📭 Nenhum cliente cadastrado. Clique no botão acima para adicionar um!</p>
-  {% endif %}
+    <main class="m-3">
+      <div class="flex justify-between p-5">
+        <h1 class="text-3xl font-bold text-center">Clientes Cadastrados 👥</h1>
+        <div class="flex gap-5">
+          <a href="/" class="bg-blue-500 px-2 py-1 rounded-lg text-white font-medium">Voltar para o Início</a>
+          <a href="/clientes/novo" class="bg-blue-500 px-2 py-1 rounded-lg text-white font-medium">Cadastrar Novo Cliente</a></p>
+        </div>
+      </div>
+  
+      <div class="flex flex-col justify-center items-center">
+        {# BLOCO PARA EXIBIR MENSAGENS FLASH #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class=flashes style="list-style: none; padding: 0;">
+          {% for category, message in messages %}
+          {# Mensagem de Sucesso #}
+          <li class="bg-green-400 p-2 rounded-lg border border-green-600 font-medium">
+            {{ message }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    
+        {% if clientes %}
+        <div class="border border-2 rounded-lg">
+          <table class="w-[1300px] h-[150px] text-center">
+            <thead class="border-b border-b-2 bg-[#e6e6e6]">
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>E-mail</th>
+                <th>Carros Cadastrados</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cliente in clientes %}
+              <tr class="border-b border-b-2">
+                <td>{{ cliente.id }}</td>
+                <td>{{ cliente.nome }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.total_carros }}</td>
+                <td>
+                  <a href="/clientes/{{ cliente.id }}/editar" class="text-green-600">Editar</a>
+      
+                  {# Formulário de Exclusão com ação dinâmica #}
+                  <form method="POST" action="/clientes/{{ cliente.id }}/excluir" style="display: inline; margin-left: 10px;">
+                    <button type="submit"
+                      onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?')"
+                      style="color: red; background: none; border: none; cursor: pointer;">
+                      Excluir
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="m-10">Nenhum cliente cadastrado. Clique no botão acima para adicionar um!</p>
+        {% endif %}
+      </div>
+    </main>
 
 </body>
 

@@ -1,38 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de Serviços</title>
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 </head>
-<body>
-    <h1>🧼 Catálogo de Serviços</h1>
-    <p><a href="/">Voltar para o Início</a></p>
 
+<body class="font-['Poppins']">
+    <header class="bg-blue-500 text-left">
+        <div class="p-7">
+            <p class="font-bold text-xl text-white">CarWashApp</p>
+        </div>
+        <div class="bg-white flex justify-center items-center p-5 border-b shadow-lg">
+            <nav>
+                <ul class="flex flex-row text-center gap-10">
+                    <li><a href="/servicos"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo
+                            de Serviços</a></li>
+                    <li><a href="/clientes"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar
+                            Clientes</a></li>
+                    <li><a href="/carros"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar
+                            Carros</a></li>
+                    <li><a href="/agendamentos"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar
+                            Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <h1 class="text-center text-3xl font-bold p-5">Catálogo de Serviços 🧼</h1>
+    
     {% if servicos %}
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Serviço</th>
-                <th>Preço</th>
-                <th>Tempo Médio</th>
-            </tr>
-        </thead>
-        <tbody>
-            {# O Jinja2 'for' itera sobre a lista 'servicos' enviada pelo Flask #}
-            {% for servico in servicos %}
-            <tr>
-                <td>{{ servico.id }}</td>
-                <td>{{ servico.descricao }}</td>
-                <td>R$ {{ "%.2f"|format(servico.preco) }}</td>
-                <td>{{ servico.tempo_medio }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>📭 Nenhum tipo de lavagem cadastrado. Verifique a inicialização dos dados.</p>
-    {% endif %}
-
+    <div class="flex justify-center items-center">
+        <table class="w-[700px] h-[200px] text-center">
+            <thead class="border bg-[#e6e6e6]">
+                <tr>
+                    <th>ID</th>
+                    <th>Serviço</th>
+                    <th>Preço</th>
+                    <th>Tempo Médio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# O Jinja2 'for' itera sobre a lista 'servicos' enviada pelo Flask #}
+                {% for servico in servicos %}
+                <tr class="border">
+                    <td>{{ servico.id }}</td>
+                    <td>{{ servico.descricao }}</td>
+                    <td>R$ {{ "%.2f"|format(servico.preco) }}</td>
+                    <td>{{ servico.tempo_medio }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>📭 Nenhum tipo de lavagem cadastrado. Verifique a inicialização dos dados.</p>
+        {% endif %}
+    </div>
+    <p class="text-center font-medium pt-20 transition duration-300 hover:text-blue-500 hover:underline underline-offset-2 decoration-2"><a href="/">Voltar para o Início</a></p>
+    
 </body>
+
 </html>

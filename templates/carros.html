@@ -4,65 +4,111 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Carros</title>
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 </head>
 
-<body>
-    <h1>🚗 Carros Cadastrados</h1>
-    <p><a href="/">Voltar para o Início</a> | <a href="/carros/novo">➕ Cadastrar Novo Carro</a></p>
+<body class="font-['Poppins']">
+    <header class="bg-blue-500 text-left">
+        <div class="p-7">
+            <p class="font-bold text-xl text-white">CarWashApp</p>
+        </div>
+        <div class="bg-white flex justify-center items-center p-5 border-b shadow-lg">
+            <nav>
+                <ul class="flex flex-row text-center gap-10">
+                    <li><a href="/servicos"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo
+                            de Serviços</a></li>
+                    <li><a href="/clientes"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar
+                            Clientes</a></li>
+                    <li><a href="/carros"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar
+                            Carros</a></li>
+                    <li><a href="/agendamentos"
+                            class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar
+                            Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    {# BLOCL DE MENSAGENS FLASH (opcional, mas bom para feedback) #}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div
-        style="color: darkgreen; border: 1px solid darkgreen; background: lightgreen; padding: 10px; margin-bottom: 10px;">
-        {{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <main class="m-3">
+        <div class="flex justify-between p-5">
+            <h1 class="text-3xl font-bold text-center">Carros Cadastrados 🚗</h1>
+            <div class="flex gap-5">
+                <a href="/" class="bg-blue-500 px-2 py-1 rounded-lg text-white font-medium">Voltar para o Início</a>
+                <a href="/carros/novo" class="bg-blue-500 px-2 py-1 rounded-lg text-white font-medium">Cadastrar Novo
+                    Carro</a>
+            </div>
+        </div>
 
-    {% if carros %}
-    <table border="1" cellpadding="10" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Modelo</th>
-                <th>Marca</th>
-                <th>Placa</th>
-                <th>Cor</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for carro in carros %}
-            <tr>
-                <td>{{ carro.id }}</td>
-                <td>{{ carro.nome_cliente }} (ID: {{ carro.id_cliente }})</td>
-                <td>{{ carro.modelo }}</td>
-                <td>{{ carro.marca }}</td>
-                <td>{{ carro.placa }}</td>
-                <td>{{ carro.cor if carro.cor else '-' }}</td>
-                <td>
-                    <a href="/carros/{{ carro.id }}/editar">Editar</a>
+        <div class="flex flex-col justify-center items-center">
+            {# BLOCO PARA EXIBIR MENSAGENS FLASH (CORRIGIDO) #}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul class=flashes style="list-style: none; padding: 0;">
+                {% for category, message in messages %}
+                {# Usa classes Tailwind para feedback de sucesso #}
+                <li class="bg-green-400 p-2 rounded-lg border border-green-600 font-medium mb-2">
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
 
-                    {# Formulário de Exclusão com ação dinâmica #}
-                    <form method="POST" action="/carros/{{ carro.id }}/excluir"
-                        style="display: inline; margin-left: 10px;">
-                        <button type="submit"
-                            onclick="return confirm('Tem certeza que deseja excluir o Carro Placa {{ carro.placa }}?')"
-                            style="color: red; background: none; border: none; cursor: pointer;">
-                            Excluir
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>📭 Nenhum carro cadastrado. Adicione um para começar a agendar!</p>
-    {% endif %}
+            {% if carros %}
+            <div class="border border-2 rounded-lg">
+                <table class="w-[1300px] text-center">
+                    <thead class="border-b border-b-2 bg-[#e6e6e6]">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">Cliente</th>
+                            <th class="p-3">Modelo</th>
+                            <th class="p-3">Marca</th>
+                            <th class="p-3">Placa</th>
+                            <th class="p-3">Cor</th>
+                            <th class="p-3">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for carro in carros %}
+                        <tr class="border-b border-b-2">
+                            <td class="p-2">{{ carro.id }}</td>
+                            <td class="p-2">{{ carro.nome_cliente }} (ID: {{ carro.id_cliente }})</td>
+                            <td class="p-2">{{ carro.modelo }}</td>
+                            <td class="p-2">{{ carro.marca }}</td>
+                            <td class="p-2">{{ carro.placa }}</td>
+                            <td class="p-2">{{ carro.cor if carro.cor else '-' }}</td>
+                            <td class="p-2">
+                                <a href="/carros/{{ carro.id }}/editar"
+                                    class="text-green-600 font-medium transition duration-300 hover:text-green-800">Editar</a>
+
+                                {# Formulário de Exclusão #}
+                                <form method="POST" action="/carros/{{ carro.id }}/excluir"
+                                    style="display: inline; margin-left: 10px;">
+                                    <button type="submit"
+                                        onclick="return confirm('Tem certeza que deseja excluir o Carro Placa {{ carro.placa }}?')"
+                                        class="text-red-600 font-medium background: none; border: none; cursor: pointer; transition duration-300 hover:text-red-800">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="m-10">📭 Nenhum carro cadastrado. Adicione um para começar a agendar!</p>
+            {% endif %}
+        </div>
+    </main>
 
 </body>
 

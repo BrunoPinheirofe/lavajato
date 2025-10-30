@@ -1,28 +1,71 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Agendamento #{{ agendamento.id }}</title>
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 </head>
-<body>
-    <h1>✏️ Editar Agendamento #{{ agendamento.id }}</h1>
-    <p><a href="/agendamentos">Voltar para a Lista de Agendamentos</a></p>
-    
-    <hr>
 
-    <form method="POST" action="/agendamentos/{{ agendamento.id }}/editar">
-        
-        <label for="status">Novo Status:</label><br>
-        <select id="status" name="status" required>
-            <option value="">-- Selecione o Novo Status --</option>
-            {% for status in status_opcoes %}
-                <option value="{{ status }}" {% if status == agendamento.status %}selected{% endif %}>
-                    {{ status }}
-                </option>
-            {% endfor %}
-        </select><br><br>
+<body class="font-['Poppins'] bg-gray-50">
+    <header class="bg-blue-500 text-left">
+        <div class="p-7">
+            <p class="font-bold text-xl text-white">CarWashApp</p>
+        </div>
+        <div class="bg-white flex justify-center items-center p-5 border-b shadow-lg">
+            <nav>
+                <ul class="flex flex-row text-center gap-10">
+                    <li><a href="/servicos" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo de Serviços</a></li>
+                    <li><a href="/clientes" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Clientes</a></li>
+                    <li><a href="/carros" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Carros</a></li>
+                    <li><a href="/agendamentos" class="transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <button type="submit">Atualizar Status</button>
-    </form>
+    <main class="flex flex-col items-center p-8">
+        <div class="w-full max-w-lg bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <h1 class="text-3xl font-bold text-gray-800">✏️ Editar Status Agendamento #{{ agendamento.id }}</h1>
+                <a href="/agendamentos" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-medium transition duration-300 hover:bg-gray-300">
+                    Voltar
+                </a>
+            </div>
+
+            <p class="mb-4 text-sm text-gray-600">
+                Cliente: **{{ cliente_nome }}** | Carro: **{{ carro_info }}** | Serviço: **{{ lavagem_descricao }}**
+            </p>
+
+            <form method="POST" action="/agendamentos/{{ agendamento.id }}/editar" class="space-y-4">
+                
+                {# Campo Status #}
+                <div class="flex flex-col">
+                    <label for="status" class="font-medium text-gray-700 mb-1">Novo Status:</label>
+                    <select id="status" name="status" required 
+                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">-- Selecione o Novo Status --</option>
+                        {% for status in status_opcoes %}
+                            <option value="{{ status }}" {% if status == agendamento.status %}selected{% endif %}>
+                                {{ status }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# Botão de Submissão #}
+                <button type="submit" 
+                        class="w-full bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300 hover:bg-green-700 mt-6">
+                    Atualizar Status
+                </button>
+            </form>
+        </div>
+    </main>
 </body>
+
 </html>
