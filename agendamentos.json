@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": 1,
+    "id_cliente": 1,
+    "id_carro": 1,
+    "id_lavagem": 3,
+    "data": "01/10/2012",
+    "hora": "22:22",
+    "status": "Agendado"
+  },
+  {
+    "id": 2,
+    "id_cliente": 1,
+    "id_carro": 1,
+    "id_lavagem": 3,
+    "data": "23/02/2232",
+    "hora": "22:22",
+    "status": "Agendado"
+  }
+]

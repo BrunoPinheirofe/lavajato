@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": 1,
+    "descricao": "Lavagem Simples",
+    "preco": 25.0,
+    "tempo_medio": "30 minutos"
+  },
+  {
+    "id": 2,
+    "descricao": "Lavagem Completa",
+    "preco": 60.0,
+    "tempo_medio": "90 minutos"
+  },
+  {
+    "id": 3,
+    "descricao": "Lavagem Premium",
+    "preco": 120.0,
+    "tempo_medio": "120 minutos"
+  },
+  {
+    "id": 4,
+    "descricao": "sadas",
+    "tempo_medio": "60",
+    "preco": 67.77
+  }
+]
