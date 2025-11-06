@@ -1,16 +1,19 @@
 from repositories.AgendamentoRepository import AgendamentoRepository
+from repositories.ClienteRepository import ClienteRepository
+from repositories.CarroRepository import CarroRepository
+from repositories.TipoLavagemRepository import TipoLavagemRepository
 from models.model import Agendamento, Cliente, Carro, TipoLavagem
 from faker import Faker
 from datetime import datetime, timedelta
 import random
 
 def seed_clientes(session, num_records=20):
-    fake = Faker()
+    fake = Faker('pt_BR')
     clientes = []
     for _ in range(num_records):
         cliente = Cliente(
             nome=fake.name(),
-            telefone=fake.phone_number(),
+            telefone=fake.phone_number().removeprefix('+55 '),
             email=fake.unique.email()
         )
         clientes.append(cliente)
@@ -52,15 +55,19 @@ def seed_tipos_lavagem(session):
         session.add(tipo_lavagem)
     session.commit()
 
-def seed_agendamentos(session, num_records=50):
+def seed_agendamentos(session, num_records=50, clientes=None, carros=None, tipos_lavagem=None):
     fake = Faker()
     agendamento_repo = AgendamentoRepository(session)
+    
+    clientes = clientes if clientes is not None else ClienteRepository.get_all_clientes(session)
+    carros = carros if carros is not None else CarroRepository.get_all_carros(session)
+    tipos_lavagem = tipos_lavagem if tipos_lavagem is not None else TipoLavagemRepository.get_all_tipos_lavagem(session)
 
     for _ in range(num_records):
         data_hora = fake.date_time_between(start_date='now', end_date='+30d')
-        cliente_id = random.randint(1, 20)  # Assuming you have 20 clients
-        id_carro = random.randint(1, 40)    # Assuming you have 40 cars
-        tipo_lavagem_id = random.randint(1, 5)  # Assuming you have 5 types of wash
+        cliente_id = random.choice(clientes).id 
+        id_carro = random.choice(carros).id
+        tipo_lavagem_id = random.choice(tipos_lavagem).id
         status = random.choice(['agendado', 'concluído', 'cancelado'])
 
         agendamento = Agendamento(
@@ -87,11 +94,20 @@ if __name__ == "__main__":
     # Create a new session
     session = SessionLocal()
 
-    # Seed agendamentos
-    seed_agendamentos(session, num_records=50)
-    seed_carros(session, seed_clientes(session, num_records=20), num_records=40)
-    seed_tipos_lavagem(session)
+    # Create repository instances
+    cliente_repo = ClienteRepository(session)
+    carro_repo = CarroRepository(session)
+    tipo_lavagem_repo = TipoLavagemRepository(session)
 
+    # Seed
+    # seed_clientes(session, num_records=20)
+   
+    seed_carros(session, cliente_repo.get_all_clientes(), num_records=40)
+    seed_tipos_lavagem(session)
+    seed_agendamentos(session, num_records=50, 
+                    clientes=cliente_repo.get_all_clientes(),
+                    carros=carro_repo.get_all_carros(),
+                    tipos_lavagem=tipo_lavagem_repo.get_all_tipos_lavagem())
     # Close the session
     session.close()
 

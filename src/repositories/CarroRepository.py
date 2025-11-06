@@ -19,6 +19,8 @@ class CarroRepository:
 
     def get_carro(self, carro_id):
         return self.db_session.query(Carro).filter(Carro.id == carro_id).first()
+    def get_all_carros(self):
+        return self.db_session.query(Carro).all()
 
     def get_carros_by_cliente(self, cliente_id):
         return self.db_session.query(Carro).filter(Carro.id_cliente == cliente_id).all()

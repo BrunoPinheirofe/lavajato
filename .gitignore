@@ -7,3 +7,4 @@ __pycache__/
 .env
 .venv
 test.db
+db_data/

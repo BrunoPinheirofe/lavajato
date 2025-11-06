@@ -1,9 +1,9 @@
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./test.db"  # TODO: ADICIONAR EM VARIAVEL DE AMBIENTE
+DATABASE_URL = "mysql+pymysql://lavajato_user:rootpassword@localhost:3306/lavajato_db?charset=utf8mb4"  # TODO: ADICIONAR EM VARIAVEL DE AMBIENTE
 engine = sqlalchemy.create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}, echo=True
+    DATABASE_URL, echo=True
 )
 SessionLocal = sessionmaker(
     bind=engine, autoflush=False, autocommit=False, expire_on_commit=False

@@ -11,8 +11,17 @@ Base.metadata.create_all(bind=engine)
 print(Base.metadata.tables.keys())
 
 
-@app.route('/clientes')
-def listar_clientes():
+@app.route('/clientes', methods=['GET', 'POST'])
+def listar_clientes(request):
+    if request.method == 'POST':
+        # Lógica para adicionar um novo cliente
+        nome = request.form['nome']
+        email = request.form['email']
+        novo_cliente = {'nome': nome, 'email': email}
+        db_session = SessionLocal()
+        cliente_repo = ClienteRepository(db_session)
+        cliente_repo.create_cliente(novo_cliente)
+        db_session.close()
     db_session = SessionLocal()
     cliente_repo = ClienteRepository(db_session)
     clientes = cliente_repo.get_all_clientes()
