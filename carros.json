@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "id": 1,
+    "id_cliente": 1,
+    "modelo": "celta",
+    "placa": "534de52",
+    "cor": "preto"
+  }
+]

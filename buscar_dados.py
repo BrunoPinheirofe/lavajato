@@ -1,5 +1,5 @@
 
-from database import carregar_dados
+from database import carregar_dados #EXPLICAR PRINCIPIO DO SRP(RESPONSABILIDADE UNICA)
 
 # --- FUNÇÕES DE BUSCA JSON  ---
 

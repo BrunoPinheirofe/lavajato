@@ -20,7 +20,7 @@ def ler_float_valido(prompt):
     while True:
         try:
             # Substitui vírgula por ponto e remove 'R$' para facilitar a conversão
-            valor = input(prompt).replace('R$', '').replace(',', '.').strip()
+            valor = input(prompt).replace('R$', '').replace(',', '.').strip()# remove caracteres de uma string
             if not valor:
                 return None # Permite que o usuário deixe em branco na edição
             return float(valor)

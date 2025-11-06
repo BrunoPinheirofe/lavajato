@@ -1,4 +1,4 @@
-# agendamentos.py - Adicionando validação de Data/Hora com datetime
+
 
 import json
 from database import carregar_dados, salvar_dados
@@ -36,7 +36,7 @@ def cadastrar_agendamento():
         return
 
     # ----------------------------------------------------
-    # PASSO 2: Selecionar Carro do Cliente
+    
     print(f"\n🚗 CARROS DO CLIENTE {cliente_selecionado['nome'].upper()}:")
     print("-" * 40)
     carros_cliente = [carro for carro in dados.get('carros', []) if carro.get('id_cliente') == id_cliente]
@@ -67,7 +67,7 @@ def cadastrar_agendamento():
         return
     
     # ----------------------------------------------------
-    # PASSO 3: Selecionar Tipo de Lavagem
+    
     if not dados.get('tipos_lavagem'):
         print("❌ Nenhum tipo de lavagem cadastrado. Cadastre um tipo de lavagem primeiro.")
         return
@@ -89,7 +89,6 @@ def cadastrar_agendamento():
         return
     
     # ----------------------------------------------------
-    # PASSO 4: Data e Hora (Com Validação de Data/Hora)
     print(f"\n📅 AGENDAMENTO PARA: {lavagem_selecionada['descricao']}")
     print(f"💵 VALOR: R$ {lavagem_selecionada['preco']:.2f}")
     print(f"⏰ TEMPO ESTIMADO: {lavagem_selecionada['tempo_medio']}")
@@ -124,7 +123,7 @@ def cadastrar_agendamento():
 
     
     # ----------------------------------------------------
-    # PASSO 5: Confirmação e Salvamento
+    
     print(f"\n✅ RESUMO DO AGENDAMENTO:")
     print(f"   👤 Cliente: {cliente_selecionado['nome']}")
     print(f"   🚗 Carro: {carro_selecionado['modelo']} - {carro_selecionado['placa']}")
@@ -161,9 +160,9 @@ def cadastrar_agendamento():
     print(f"📋 Número do agendamento: {novo_id}")
     print(f"📞 Cliente: {cliente_selecionado['nome']} - {cliente_selecionado['telefone']}")
 
-# ... (A função listar_agendamentos permanece igual)
+
 def listar_agendamentos():
-    """Lista todos os agendamentos (Versão Limpa)"""
+    
     dados = carregar_dados()
     
     print("\n" + "=" * 60)
