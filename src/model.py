@@ -13,11 +13,12 @@ class Agendamento(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     data_hora: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    cliente_id: Mapped[int] = mapped_column(ForeignKey('tb_clientes.id'), nullable=False)
     id_carro: Mapped[int] = mapped_column(ForeignKey('tb_carros.id'), nullable=False)
     tipo_lavagem_id: Mapped[int] = mapped_column(ForeignKey('tb_tipos-lavagem.id'), nullable=False)
     data: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False) # e.g., 'agendado', 'concluído', 'cancelado'
+    tipo_lavagem = relationship("TipoLavagem", back_populates="agendamentos")
+    carro = relationship("Carro")
 
 class Cliente(Base):
     __tablename__ = "tb_clientes"
@@ -39,9 +40,10 @@ class Carro(Base):
     cliente = relationship("Cliente", back_populates="carros")
 
 class TipoLavagem(Base):
-    __tablename__ = 'tb_tipos-lavagem'
+    __tablename__ = 'tb_tipos-lavagem'  
 
     id: Mapped[int] = mapped_column(primary_key=True)
     descricao: Mapped[str] = mapped_column(Text, deferred=True)
     preco: Mapped[float] = mapped_column(Float(precision=2), nullable=False)
     tempo_estimado: Mapped[int] = mapped_column(nullable=False)  # em minutos
+    agendamentos = relationship("Agendamento", back_populates="tipo_lavagem")

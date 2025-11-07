@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="shortcut icon" href="/static/src/img/carwashappicon.png" type="image/x-icon">
+    <title>CarWashApp - Novo Agendamento</title>
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="font-['Poppins'] bg-gray-50">
+    <header class="bg-blue-500 text-left">
+        <div class="p-5 flex flex-row items-center gap-4">
+            <a href="/"><p class="font-bold text-xl text-white text-center">CarWashApp</p></a>
+        </div>
+        
+        <div class="bg-white flex justify-between md:justify-center items-center p-5 border-b shadow-lg">
+            <nav class="w-full md:w-auto">
+                <button id="menu-btn" class="md:hidden text-gray-800 p-2 rounded-lg hover:bg-gray-100 transition duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+                
+                <ul id="menu-links" class="hidden flex-col md:flex md:flex-row text-left md:text-center gap-2 md:gap-10 mt-3 md:mt-0 w-full absolute md:static bg-white md:bg-transparent shadow-lg md:shadow-none left-0 z-10 p-4 md:p-0">
+                    <li><a href="/" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Início/Dashboard</a></li>
+                    <li><a href="/servicos" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo de Serviços</a></li>
+                    <li><a href="/clientes" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Clientes</a></li>
+                    <li><a href="/carros" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Carros</a></li>
+                    <li><a href="/agendamentos" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex flex-col items-center p-4 md:p-8">
+        <div class="w-full max-w-lg bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Novo Agendamento de Serviço</h1>
+                <a href="/agendamentos" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-medium transition duration-300 hover:bg-gray-300 whitespace-nowrap">
+                    Voltar
+                </a>
+            </div>
+
+            <form method="POST" action="/agendamentos/novo" class="space-y-4">
+                
+                <div class="flex flex-col">
+                    <label for="id_carro" class="font-medium text-gray-700 mb-1">Carro (Placa/Modelo):</label>
+                    <select id="id_carro" name="id_carro" required
+                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
+                        <option value="">Selecione o Carro</option>
+                        {% for carro in carros %}
+                            <option value="{{ carro.id }}">{{ carro.marca }} - {{ carro.modelo }} (Cliente ID: {{ carro.id_cliente }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="flex flex-col">
+                    <label for="tipo_lavagem_id" class="font-medium text-gray-700 mb-1">Tipo de Serviço:</label>
+                    <select id="tipo_lavagem_id" name="tipo_lavagem_id" required
+                            class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
+                        <option value="">Selecione o Serviço</option>
+                        {% for lavagem in lavagens %}
+                            <option value="{{ lavagem.id }}">
+                                {{ lavagem.descricao }} (R$ {{ "%.2f"|format(lavagem.preco) }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    
+                    <div class="flex flex-col w-full sm:w-1/2">
+                        <label for="data" class="font-medium text-gray-700 mb-1">Data do Agendamento:</label>
+                        <input type="date" id="data" name="data" required
+                               class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
+                    </div>
+
+                    <div class="flex flex-col w-full sm:w-1/2">
+                        <label for="hora" class="font-medium text-gray-700 mb-1">Hora do Agendamento:</label>
+                        <input type="time" id="hora" name="hora" required
+                               class="border border-gray-300 p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg transition duration-300 hover:bg-blue-700 mt-6">
+                    Finalizar Agendamento
+                </button>
+            </form>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menu-btn');
+            const menuLinks = document.getElementById('menu-links');
+
+            if (menuBtn && menuLinks) {
+                menuBtn.addEventListener('click', function() {
+                    menuLinks.classList.toggle('hidden'); 
+                    if (!menuLinks.classList.contains('hidden')) {
+                        menuLinks.classList.add('flex');
+                    } else {
+                        menuLinks.classList.remove('flex');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

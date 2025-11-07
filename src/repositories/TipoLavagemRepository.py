@@ -1,4 +1,4 @@
-from models.model import TipoLavagem
+from model import TipoLavagem
 
 
 class TipoLavagemRepository:

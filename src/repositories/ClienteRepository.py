@@ -1,5 +1,5 @@
 from sqlite3 import IntegrityError
-from models.model import Cliente
+from model import Cliente
 
 
 class ClienteRepository:

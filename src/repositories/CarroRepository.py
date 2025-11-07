@@ -1,4 +1,4 @@
-from models.model import Carro
+from model import Carro
 
 
 class CarroRepository:

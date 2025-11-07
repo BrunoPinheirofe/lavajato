@@ -2,7 +2,7 @@ from repositories.AgendamentoRepository import AgendamentoRepository
 from repositories.ClienteRepository import ClienteRepository
 from repositories.CarroRepository import CarroRepository
 from repositories.TipoLavagemRepository import TipoLavagemRepository
-from models.model import Agendamento, Cliente, Carro, TipoLavagem
+from model import Agendamento, Cliente, Carro, TipoLavagem
 from faker import Faker
 from datetime import datetime, timedelta
 import random
@@ -55,30 +55,28 @@ def seed_tipos_lavagem(session):
         session.add(tipo_lavagem)
     session.commit()
 
-def seed_agendamentos(session, num_records=50, clientes=None, carros=None, tipos_lavagem=None):
+def seed_agendamentos(session, num_records=50, carros=None, tipos_lavagem=None):
     fake = Faker()
     agendamento_repo = AgendamentoRepository(session)
-    
-    clientes = clientes if clientes is not None else ClienteRepository.get_all_clientes(session)
+
     carros = carros if carros is not None else CarroRepository.get_all_carros(session)
     tipos_lavagem = tipos_lavagem if tipos_lavagem is not None else TipoLavagemRepository.get_all_tipos_lavagem(session)
 
     for _ in range(num_records):
         data_hora = fake.date_time_between(start_date='now', end_date='+30d')
-        cliente_id = random.choice(clientes).id 
         id_carro = random.choice(carros).id
         tipo_lavagem_id = random.choice(tipos_lavagem).id
         status = random.choice(['agendado', 'concluído', 'cancelado'])
 
         agendamento = Agendamento(
             data_hora=data_hora,
-            cliente_id=cliente_id,
+
             id_carro=id_carro,
             tipo_lavagem_id=tipo_lavagem_id,
             status=status
         )
 
-        agendamento_repo.save(agendamento)
+        agendamento_repo.create_agendamento(agendamento)
 
     session.commit()
     
@@ -86,7 +84,7 @@ def seed_agendamentos(session, num_records=50, clientes=None, carros=None, tipos
     
 if __name__ == "__main__":
     from db.session import SessionLocal, engine
-    from models.model import Base
+    from model import Base
 
     # Create tables
     Base.metadata.create_all(bind=engine)
@@ -100,12 +98,11 @@ if __name__ == "__main__":
     tipo_lavagem_repo = TipoLavagemRepository(session)
 
     # Seed
-    # seed_clientes(session, num_records=20)
-   
+    seed_clientes(session, num_records=20)
     seed_carros(session, cliente_repo.get_all_clientes(), num_records=40)
     seed_tipos_lavagem(session)
     seed_agendamentos(session, num_records=50, 
-                    clientes=cliente_repo.get_all_clientes(),
+                    
                     carros=carro_repo.get_all_carros(),
                     tipos_lavagem=tipo_lavagem_repo.get_all_tipos_lavagem())
     # Close the session
