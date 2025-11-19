@@ -1,4 +1,4 @@
-# clientes.py
+# clientes.py - Corrigida a chamada para cadastrar carro
 from database import carregar_dados, salvar_dados
 
 def cadastrar_cliente():
@@ -27,13 +27,13 @@ def cadastrar_cliente():
     salvar_dados(dados)
     print(f"Cliente {nome} cadastrado com sucesso! ID: {novo_id}")
     
-    # Perguntar se deseja cadastrar um carro
+    # CORREÇÃO: Chama a função correta e passa o nome do cliente
     if input("Deseja cadastrar um carro para este cliente? (s/n): ").lower() == 's':
-        from carros import cadastrar_carro
-        cadastrar_carro(novo_id)
+        from carros import cadastrar_carro_para_cliente 
+        cadastrar_carro_para_cliente(novo_id, nome)
 
 def listar_clientes():
-    """Lista todos os clientes"""
+# ... (o resto da função é o mesmo)
     dados = carregar_dados()
     
     print("\n--- LISTA DE CLIENTES ---")

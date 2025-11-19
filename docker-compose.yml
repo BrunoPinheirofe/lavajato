@@ -1,0 +1,14 @@
+services:
+  database:
+    image: "mariadb:10.6"
+    container_name: "lavajato_database"
+    environment:
+      MARIADB_ROOT_PASSWORD: "rootpassword"
+      MARIADB_DATABASE: "lavajato_db"
+      MARIADB_USER: "lavajato_user"
+      MARIADB_PASSWORD: "rootpassword"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db_data:/var/lib/mariadb
+    

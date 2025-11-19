@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>CarWashApp</title>
+    <link rel="shortcut icon" href="/static/src/img/carwashappicon.png" type="image/x-icon">
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="font-['Poppins'] bg-gray-50">
+    <header class="bg-blue-500 text-left">
+        <div class="p-5 flex flex-row items-center gap-4">
+            <a href="/"><p class="font-bold text-xl text-white text-center">CarWashApp</p></a>
+        </div>
+        
+        <div class="bg-white flex justify-between md:justify-center items-center p-5 border-b shadow-lg">
+            
+            <nav class="w-full md:w-auto">
+                
+                <button id="menu-btn" class="md:hidden text-gray-800 p-2 rounded-lg hover:bg-gray-100 transition duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+                
+                <ul id="menu-links" class="hidden flex-col md:flex md:flex-row text-left md:text-center gap-2 md:gap-10 mt-3 md:mt-0 w-full absolute md:static bg-white md:bg-transparent shadow-lg md:shadow-none left-0 z-10 p-4 md:p-0">
+                    
+                    <li><a href="/" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Início/Dashboard</a></li>
+                    <li><a href="/servicos" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Catálogo de Serviços</a></li>
+                    <li><a href="/clientes" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Clientes</a></li>
+                    <li><a href="/carros" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Gerenciar Carros</a></li>
+                    <li><a href="/agendamentos" class="block transition duration-300 hover:text-blue-500 hover:underline hover:decoration-2 hover:font-medium active:text-white active:underline decoration-2 underline-offset-2 active:bg-blue-500 rounded-lg p-2">Visualizar Agendamentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="p-4 md:p-8">
+        <div class="max-w-screen-xl 2xl:max-w-screen-2xl mx-auto"> 
+
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Resumo Operacional</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                
+                {# Card 1: Faturamento do Mês #}
+                <div class="bg-white p-6 rounded-xl shadow-md border-b-4 border-green-500">
+                    <p class="text-lg font-medium text-gray-500">Faturamento no Mês</p>
+                    <p class="text-3xl font-extrabold text-green-600 mt-1">
+                        R$ {{ "%.2f"|format(metricas.faturamento_mes) }}
+                    </p>
+                </div>
+
+                {# Card 2: Agendamentos de Hoje #}
+                <div class="bg-white p-6 rounded-xl shadow-md border-b-4 border-blue-500">
+                    <p class="text-lg font-medium text-gray-500">Agendamentos Hoje</p>
+                    <p class="text-3xl font-extrabold text-blue-600 mt-1">
+                        {{ metricas.total_agendamentos_hoje }}
+                    </p>
+                </div>
+
+                {# Card 3: Total de Clientes #}
+                <div class="bg-white p-6 rounded-xl shadow-md border-b-4 border-purple-500">
+                    <p class="text-lg font-medium text-gray-500">Total de Clientes</p>
+                    <p class="text-3xl font-extrabold text-purple-600 mt-1">
+                        {{ metricas.total_clientes }}
+                    </p>
+                </div>
+
+                {# Card 4: Total de Carros #}
+                <div class="bg-white p-6 rounded-xl shadow-md border-b-4 border-yellow-500">
+                    <p class="text-lg font-medium text-gray-500">Total de Carros</p>
+                    <p class="text-3xl font-extrabold text-yellow-600 mt-1">
+                        {{ metricas.total_carros }}
+                    </p>
+                </div>
+            </div>
+
+            {# Seção de Agendamentos Próximos (Tabela) #}
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Próximos Agendamentos</h3>
+                
+                {% if agendamentos_proximos %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="p-3 whitespace-nowrap">Data</th>
+                                <th class="p-3 whitespace-nowrap">Hora</th>
+                                <th class="p-3 whitespace-nowrap">Cliente</th>
+                                <th class="p-3 whitespace-nowrap">Serviço</th>
+                                <th class="p-3 whitespace-nowrap">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ag in agendamentos_proximos %}
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-3 whitespace-nowrap">{{ ag.data_hora.strftime('%d/%m/%Y') }}</td>
+                                <td class="p-3 font-semibold whitespace-nowrap">{{ ag.data_hora.strftime('%H:%M') }}</td>
+                                <td class="p-3 whitespace-nowrap">{{ ag.carro.cliente.nome }}</td>
+                                <td class="p-3 whitespace-nowrap">{{ ag.tipo_lavagem.descricao }}</td>
+                                <td class="p-3 whitespace-nowrap">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                        {% if ag.status == 'Agendado' %} bg-blue-100 text-blue-800
+                                        {% elif ag.status == 'Em Andamento' %} bg-yellow-100 text-yellow-800
+                                        {% elif ag.status == 'Concluído' %} bg-green-100 text-green-800
+                                        {% elif ag.status == 'Cancelado' %} bg-red-100 text-red-800
+                                        {% else %} bg-gray-100 text-gray-800
+                                        {% endif %}
+                                    ">
+                                        {{ ag.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-gray-500">Nenhum agendamento próximo encontrado.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menu-btn');
+            const menuLinks = document.getElementById('menu-links');
+
+            if (menuBtn && menuLinks) {
+                menuBtn.addEventListener('click', function() {
+                    // Alterna 'hidden' para mostrar/esconder
+                    menuLinks.classList.toggle('hidden'); 
+                    
+                    // Adiciona 'flex' (vertical) quando não estiver hidden (para mobile)
+                    if (!menuLinks.classList.contains('hidden')) {
+                        menuLinks.classList.add('flex');
+                    } else {
+                        menuLinks.classList.remove('flex');
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
